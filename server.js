@@ -3,7 +3,13 @@ import { parse } from 'url';
 import { readFile, stat } from 'fs/promises';
 import { join, resolve, extname } from 'path';
 
+import { getProjectsList } from './index.js';
+import { functionGenerator, functionRead, } from './functionGenerator/functionGenerator.js';
+import { listFolders } from './fileIO.js';
+
 const publicDirectory = resolve('public');
+
+
 
 export const server = http.createServer(async (req, res) => {
     const parsedUrl = parse(req.url, true);
@@ -38,18 +44,38 @@ export const server = http.createServer(async (req, res) => {
         body.push(chunk);
     });
 
-    req.on('end', () => {
-        body = Buffer.concat(body).toString();
+    req.on('end', async () => {
+        body = JSON.parse(Buffer.concat(body).toString());
         let responseContent;
         let statusCode = 200;
 
-        switch (trimmedPath) {
-            case 'endpoint1':
-                responseContent = { message: 'This is endpoint 1' };
+        let projectName = body.projectName;
+        let action = body.action;
+
+        console.log("doing this action: ", action, body);
+
+        switch (action) {
+            case 'function.list':
+                console.log(body);
+                console.log(`./projects/${projectName}/functions/`);
+
+                const listOfunctions = await listFolders(`./projects/${projectName}/functions/`);
+
+                console.log(listOfunctions);
+
+                responseContent = { functions: listOfunctions };
                 break;
-            case 'endpoint2':
-                responseContent = { message: 'This is endpoint 2' };
+
+            case 'function.read':
+                responseContent = await functionRead(body);
                 break;
+
+            case 'function.generator':
+                const functionData = await functionGenerator(body);
+                responseContent = functionData;
+                break;
+
+
             default:
                 statusCode = 404;
                 responseContent = { error: 'Endpoint not found' };

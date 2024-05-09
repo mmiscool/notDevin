@@ -44,7 +44,16 @@ export function makeFolder(folderName) {
 
 //return list of folder in specific directory
 export function listFolders(folderName) {
-    return fs.readdirSync(folderName, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory())
-        .map(dirent => dirent.name);
+
+    try {
+        return fs.readdirSync(folderName, { withFileTypes: true })
+            .filter(dirent => dirent.isDirectory())
+            .map(dirent => dirent.name);
+    } catch (err) {
+        if (fileIOdebugMode == true) console.log(err);
+        return [];
+    }
+
+
+
 }
