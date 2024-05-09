@@ -79,14 +79,10 @@ export async function listModels() {
 }
 
 
-// installModel("phi3");
-// installModel("codegemma");
-// installModel("codellama");
-// installModel("llama2");
-
-
-
-
+installModel("phi3");
+installModel("codegemma");
+installModel("codellama");
+installModel("llama2");
 export async function templateCallLLM(templateName, data) {
   // data contains an object with the data to be replaced in the template
   let template = await fileIOread(`./promptTemplates/${templateName}.md`);

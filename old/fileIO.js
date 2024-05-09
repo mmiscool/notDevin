@@ -3,33 +3,27 @@ import fs from 'fs';
 const fileIOdebugMode = false;
 
 export function fileIOwrite(fileName, data) {
-    try {
-        fs.writeFileSync(fileName, data);
-        console.log(`File ${fileName} written successfully!`);
-    } catch (err) {
-        console.log(err);
-    }
+    fs.writeFile(fileName, data, function (err) {
+        if (err) {
+            console.log(err);
+        } else {
+            if (fileIOdebugMode == true) console.log('File written successfully');
+        }
+    });
 }
 
 // function to read a whole text into a string
 export function fileIOread(fileName) {
-    //console.log('Reading file:', fileName);
-    let fileContents = "";
     try {
-        fileContents = fs.readFileSync(fileName, 'utf8');
+        return fs.readFileSync(fileName, 'utf8');
     } catch (err) {
         if (fileIOdebugMode == true) console.log(err);
-        console.log('Error reading file:', fileName);
         return "";  // Return null if there's an error
     }
-
-    //console.log('File contents:', fileContents);
-
-    return fileContents;
 }
 
 export function fileIOdelete(fileName, silent = false) {
-    return fs.unlink(fileName, (err) => {
+    fs.unlink(fileName, (err) => {
         if (err) {
             if (!silent) console.log(err);
         } else {

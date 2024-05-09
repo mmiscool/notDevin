@@ -13,17 +13,15 @@
 
     <div class="toolbar">
         Project: <input type="text" id="projectName">
-        <button id="listFunctionsButton">List Functions</button>
+        <button onclick="listFunctions()">List Functions</button>
     </div>
     <div class="container">
         <div class="left">
-            <button id="newFunctionButton">New Function</button>
-            <select id="functionNameList" size="10"></select>
+            <button onclick="listFunctions()">New Function</button>
+            <select id="functionName" size="10"></select>
         </div>
         <div class="right">
-            <input type="text" id="functionName" placeholder="Function Name">
-            <button id="saveFunctionButton">Save Function</button>
-            <button id="generateFunctionButton">Generate Function</button>
+            <h2 id="functionNameDisplay"></h2><button id="generateFunctionButton">Generate Function</button>
             <h3>Function arguments list</h3>
             <textarea id="functionArgs"></textarea>
             <h3>Spec</h3>
@@ -37,5 +35,5 @@
         </div>
     </div>
 </body>
-<script type="module" src="./index.js"></script>
+<script src="script.js"></script>
 </html>
