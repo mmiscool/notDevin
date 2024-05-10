@@ -1,26 +1,33 @@
 import fs from 'fs';
+import { dirname } from 'path';
 
 const fileIOdebugMode = false;
 
-export function fileIOwrite(fileName, data) {
+export async function fileIOwrite(fileName, data) {
+    const dirPath = dirname(fileName);
+    await makeFolder(dirPath);
+    
     try {
         fs.writeFileSync(fileName, data);
-        console.log(`File ${fileName} written successfully!`);
+        if (fileIOdebugMode == true) console.log(`File ${fileName} written successfully!`);
     } catch (err) {
         console.log(err);
     }
 }
 
 // function to read a whole text into a string
-export function fileIOread(fileName) {
+export function fileIOread(fileName, createIfNotExist = false) {
     //console.log('Reading file:', fileName);
     let fileContents = "";
     try {
         fileContents = fs.readFileSync(fileName, 'utf8');
     } catch (err) {
-        if (fileIOdebugMode == true) console.log(err);
-        console.log('Error reading file:', fileName);
-        return "";  // Return null if there's an error
+        if (fileIOdebugMode == true) console.log('Error reading file:', fileName);
+        if (createIfNotExist) {
+            fileIOwrite(fileName, createIfNotExist);
+            return createIfNotExist;
+        }
+        return "";  // Return empty string if file dose not exist 
     }
 
     //console.log('File contents:', fileContents);
@@ -40,10 +47,10 @@ export function fileIOdelete(fileName, silent = false) {
 
 
 
-export function makeFolder(folderName) {
+export async  function makeFolder(folderName) {
     // check if the folder exists
     if (!fs.existsSync(folderName)) {
-        return fs.mkdirSync(folderName);
+        return await fs.mkdirSync(folderName, { recursive: true });
     }
 }
 

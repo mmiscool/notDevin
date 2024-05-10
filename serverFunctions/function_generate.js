@@ -23,23 +23,17 @@ export default async function function_generate(inputObject) {
 
     let currentSpecFileContents = await fileIOread(specFilePath);
 
-    if (currentSpecFileContents == "") {
-        const specTemplate = await fileIOread(`./promptTemplates/mf.spec.md`);
-        await fileIOwrite(specFilePath, specTemplate);
-    }
-
     let currentCodeContents = await fileIOread(`${functionPath}/${functionName}.js`);
 
     ///await launchEditor(specFilePath);
     currentSpecFileContents = await fileIOread(specFilePath);
 
     if (currentCodeContents == "") {
-        currentCodeContents = `## Current code
-  ${currentCodeContents}`;
+        currentCodeContents = '## Current code \n' + `${currentCodeContents}`;
     }
 
 
-    let promptResult = await templateCallLLM("mf", {
+    currentCodeContents = await templateCallLLM("mf", {
         name: functionName,
         spec: currentSpecFileContents,
         currentCodeContents: currentCodeContents,
@@ -47,36 +41,45 @@ export default async function function_generate(inputObject) {
     });
 
 
-    promptResult = await replaceFirstFunctionName(promptResult, functionName);
+    currentCodeContents = await replaceFirstFunctionName(currentCodeContents, functionName);
     // promptResult = "this should make throw ERROR !!|";
-    await fileIOwrite(`${functionPath}/${functionName}.js`, promptResult);
+    await fileIOwrite(`${functionPath}/${functionName}.js`, currentCodeContents);
+
+    let JSdocString = await templateCallLLM("mf.jsdoc", {
+        currentCodeContents: currentCodeContents,
+    });
+
+    await fileIOwrite(`${functionPath}/${functionName}.jsdoc`, JSdocString);
+
 
     await testTheCode(inputObject);
 }
 
-import path from 'path';
 export async function testTheCode(inputObject) {
-    console.log(inputObject)
+    //console.log(inputObject)
     const functionName = inputObject.functionName;
     const projectName = inputObject.projectName;
     const functionPath = `./projects/${projectName}/functions/${functionName}`;
 
 
     const codeToTest = await fileIOread(`${functionPath}/${functionName}.js`);
-    console.log("codeToTest", codeToTest);
+    //console.log("codeToTest", codeToTest);
 
     //console.log(`${functionPath}/${functionName}.js`);
 
     await fileIOdelete(`${functionPath}/error.log`, true);
-    console.log(codeToTest);
+    //console.log(codeToTest);
     const testResult = await executeCodeAsync(codeToTest);
+
+    // consolelog what type the test result is
+    console.log("Test result type: ", typeof testResult);
 
 
     if (testResult !== true) {
-        console.log("Error executing code: ", testResult);
+        console.log("Error executing code: ", testResult.errorString);
         // write the error to an error.log file
-        await fileIOwrite(`${functionPath}/error.log`, JSON.stringify(testResult));
-        console.log(`we wrote the results of thest to ${functionPath}/error.log`)
+        await fileIOwrite(`${functionPath}/error.log`,testResult.errorString);
+        console.log(`we wrote the results of test to ${functionPath}/error.log`)
         return false;
     } else {
         console.log("Test result: ", testResult);

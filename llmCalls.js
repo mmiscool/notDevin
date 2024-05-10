@@ -10,6 +10,9 @@ async function invokeLLM(props) {
     const response = await ollama.chat({
       model: props.model,
       messages: [{ role: props.role, content: props.content }],
+      options: {
+        "num_ctx": 100000,
+      }
     });
     //console.log(`${response.message.content}\n`);
     return response.message.content;  // Return the response content
@@ -21,21 +24,23 @@ async function invokeLLM(props) {
 }
 
 export async function callLLM(prompt, model = "codegemma", user = "user") {
-  model = "phi3";
-  console.log(`running Prompt: ${prompt}`);
+  console.log(`running Prompt: ---------------------------------------------------------
+${prompt}`);
   let chatConfig = {
     model,
     role: user,
     content: prompt
   };
 
-  return await invokeLLM(chatConfig);  // Return the result from invokeLLM
+  const response = await invokeLLM(chatConfig);  // Call the invokeLLM function
+  console.log(`Response: ${response}`);  // Log the response
+
+  return response;
 }
 
 
 // function to pull a specific model from the API
 export async function installModel(modelName, forceInstall = false) {
-
   // check if the model is already installed
   const models = await ollama.list();
 
@@ -45,10 +50,8 @@ export async function installModel(modelName, forceInstall = false) {
 
   const model = models.models.find(m => m.name.split(":")[0] === modelName);
 
-
-
   if (model && !forceInstall) {
-    console.log(`Model ${modelName} already installed!`);
+    //console.log(`Model ${modelName} already installed!`);
     return;
   }
 
@@ -89,18 +92,30 @@ export async function listModels() {
 
 export async function templateCallLLM(templateName, data) {
   // data contains an object with the data to be replaced in the template
-  let template = await fileIOread(`./promptTemplates/${templateName}.md`);
+  const promptTemplatePath = `./promptTemplates/${templateName}.md`;
+
+  console.log(`Template path: ${promptTemplatePath}`);
+
+  if (!data.model | data.model == "") data.model = await fileIOread(promptTemplatePath + ".model", "phi3");
+  if (!data.user | data.user == "") data.user = await fileIOread(promptTemplatePath + ".user", "user");
+
+
+  await console.log(data);
+
+
+  let template = await fileIOread(promptTemplatePath);
   if (template === null) {
     console.log("Error loading template");
     return null;
   }
+
+  await installModel(data.model);
+
   for (const key in data) {
     template = template.replace(`{${key}}`, data[key]);
   }
 
-
-
-  return callLLM(template);
+  return callLLM(template, data.model, data.user);
 }
 
 //listModels();

@@ -10,32 +10,18 @@
 </head>
 
 <body>
-
     <div class="toolbar">
-        Project: <input type="text" id="projectName">
-        <button id="listFunctionsButton">List Functions</button>
+        Project: <input type="text" id="projectName" disabled>
+         <button id="showPlanEditorButton" class="tab">Plan Editor</button>
+        <button id="showFunctionsEditorButton" class="tab">Functions Editor</button>
+        
     </div>
     <div class="container">
-        <div class="left">
-            <button id="newFunctionButton">New Function</button>
-            <select id="functionNameList" size="10"></select>
-        </div>
-        <div class="right">
-            <input type="text" id="functionName" placeholder="Function Name">
-            <button id="saveFunctionButton">Save Function</button>
-            <button id="generateFunctionButton">Generate Function</button>
-            <h3>Function arguments list</h3>
-            <textarea id="functionArgs"></textarea>
-            <h3>Spec</h3>
-            <textarea id="spec"></textarea>
-            <h3>Code</h3>
-            <textarea id="code"></textarea>
-            <h3>errorLog</h3>
-            <textarea id="errorLog"></textarea>
-            <h3>requestData</h3>
-            <textarea id="requestData"></textarea>
-        </div>
+        <iframe id="functionsEditor" src="functionsEditor.html" width="100%" height="100%"></iframe>
+        <iframe id="planEditor" src="planEditor.html" width="100%" height="100%" style="display: none;"></iframe>
     </div>
 </body>
-<script type="module" src="./index.js"></script>
+<script type="module" src="index.js"></script>
+
+
 </html>
