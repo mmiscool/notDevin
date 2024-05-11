@@ -6,6 +6,8 @@ export async function sendToApi(apiName, objectToSend, spinner = true) {
     const newObjectToSend = JSON.parse(JSON.stringify(objectToSend));
     newObjectToSend.action = apiName;
     newObjectToSend.projectName = window.projectName;
+    
+    newObjectToSend.timeStamp = Date.now();
 
     // Show the spinner before making the request
     if (spinner) document.getElementById("spinner").style.display = "block";

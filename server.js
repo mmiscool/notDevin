@@ -13,10 +13,12 @@ app.use(express.static('public'));
 
 // API endpoint that handles POST requests
 app.post('/api', async (req, res) => {
+    //console.log("API CALL RECEIVED!!",  req.body); // Log the request body to the console
     //console.log("\n\nAPI CALL RECEIVED",  req.body); // Log the request body to the console
     const responseObject = await serverFunctionsCall(req.body);
     //console.log("responseObject",  responseObject);
     res.status(200).send(JSON.stringify(responseObject));
+    
 });
 
 app.listen(PORT, () => {

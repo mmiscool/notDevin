@@ -4,19 +4,33 @@ import { spinner_insert, spinner_show, spinner_hide } from './commonComponents.j
 
 const functionsEditor = document.getElementById('functionsEditor');
 const planEditor = document.getElementById('planEditor');
+const compileEditor = document.getElementById('compileEditor');
 const showFunctionsEditorButton = document.getElementById('showFunctionsEditorButton');
 const showPlanEditorButton = document.getElementById('showPlanEditorButton');
+const compileButton = document.getElementById('compileButton');
 
 showFunctionsEditorButton.addEventListener('click', () => {
+    hideIframes();
     functionsEditor.style.display = 'block';
-    planEditor.style.display = 'none';
 });
 
 showPlanEditorButton.addEventListener('click', () => {
-    functionsEditor.style.display = 'none';
+    hideIframes();
     planEditor.style.display = 'block';
 });
 
+compileButton.addEventListener('click', async () => {
+    hideIframes();
+    compileEditor.style.display = 'block';
+   
+});
+
+
+function hideIframes(){
+    functionsEditor.style.display = 'none';
+    planEditor.style.display = 'none';
+    compileEditor.style.display = 'none';
+}
 
 
 // run this function after the page is done loading
@@ -35,6 +49,7 @@ window.onload = async function () {
     // set iframe src to include the project name
     functionsEditor.src = `functionsEditor.html?projectName=${projectName}`;
     planEditor.src = `planEditor.html?projectName=${projectName}`;
+    compileEditor.src = `compileEditor.html?projectName=${projectName}`;
 
     showFunctionsEditorButton.click();
 }

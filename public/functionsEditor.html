@@ -6,24 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light dark" />
     <title>NotDevin</title>
-    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="./newStyle.css" />
 </head>
 
 <body>
-    <div class="toolbar">
-        <input type="text" id="projectName" style="display:none;">
-        <button id="listFunctionsButton">List Functions</button><button id="generateAllFunctionsButton">Generate All
-            Functions</button>
-    </div>
     <div class="container">
+        <div class="toolBar">
+            <input type="text" id="projectName" style="display:none;">
+            <button id="listFunctionsButton">List Functions</button><button id="generateAllFunctionsButton">Generate All
+                Functions</button>
+        </div>
         <div class="left">
             <button id="newFunctionButton">New Function</button>
             <select id="functionNameList" size="10"></select>
         </div>
         <div class="right">
-            <input type="text" id="functionName" placeholder="Function Name">
             <button id="saveFunctionButton">Save Function</button>
             <button id="generateFunctionButton">Generate Function</button>
+            <button id="deleteFunctionButton">Delete Function</button>
+            <h3>Function name</h3>
+            <input type="text" id="functionName" placeholder="Function Name">
             <h3>Function arguments list</h3>
             <textarea id="functionArgs"></textarea>
             <h3>Spec</h3>
@@ -38,9 +41,8 @@
             <textarea id="requestData"></textarea>
         </div>
     </div>
-
-
 </body>
+
 <script type="module" src="./functionsEditor.js"></script>
 
 </html>

@@ -5,7 +5,7 @@ Give me the complete comment block as plain text as your answer.
 Do not wrap the text in any markdown formatting.
 
 ```
-{currentCodeContents}
+{code}
 ```
 
 DO NOT INCLUDE THE FUNCTION CODE IN YOUR RESPONSE.

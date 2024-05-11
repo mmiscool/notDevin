@@ -1,4 +1,5 @@
 import { sendToApi } from "./APIajaxRequest.js";
+import { setupTextareaAdjustment } from "./commonComponents.js";
 import { spinner_insert, spinner_hide, spinner_show } from './commonComponents.js';
 
 
@@ -10,6 +11,7 @@ const widgets = {
     functionName: document.getElementById("functionName"),
     saveFunctionButton: document.getElementById("saveFunctionButton"),
     generateFunctionButton: document.getElementById("generateFunctionButton"),
+    deleteFunctionButton: document.getElementById("deleteFunctionButton"),
     functionArgs: document.getElementById("functionArgs"),
     spec: document.getElementById("spec"),
     jsdoc: document.getElementById("jsdoc"),
@@ -25,7 +27,10 @@ widgets.requestData.readOnly = true;
 
 
 
-widgets.newFunctionButton.addEventListener("click", function () {
+widgets.newFunctionButton.addEventListener("click", function_new);
+
+
+function function_new() {
     widgets.functionName.value = "";
     widgets.functionArgs.value = "";
     widgets.spec.value = "";
@@ -33,10 +38,7 @@ widgets.newFunctionButton.addEventListener("click", function () {
     widgets.code.value = "";
     widgets.errorLog.value = "";
     setupTextareaAdjustment();
-});
-
-
-
+}
 
 
 
@@ -82,6 +84,19 @@ async function function_save(skipRead = false) {
     console.log(response);
 
     if (skipRead === false) await function_read(functionName);
+}
+
+widgets.deleteFunctionButton.addEventListener("click", function_delete);
+
+async function function_delete() {
+    // confirm with the user that they really want to delete the function
+    if (!confirm("Are you sure you want to delete this function?")) return;
+
+    const functionName = widgets.functionName.value;
+    const response = await sendToApi("function_delete", { functionName: functionName });
+    console.log(response);
+    function_new();
+    function_list();
 }
 
 
@@ -135,29 +150,6 @@ function updateSelectOptions(select, options) {
 
         // Add the option to the select element
         select.appendChild(option);
-    });
-}
-
-
-
-function adjustTextareaHeight(textarea) {
-    // Reset the height to 'auto' to get the correct scroll height
-    textarea.style.height = 'auto';
-    // Set the height of textarea to its scroll height
-    textarea.style.height = `${textarea.scrollHeight + 15}px`;
-}
-
-function setupTextareaAdjustment() {
-    // Select all textarea elements on the page
-    const textareas = document.querySelectorAll('textarea');
-
-    // Iterate through each textarea
-    textareas.forEach(textarea => {
-        // Initially adjust the height
-        adjustTextareaHeight(textarea);
-
-        // Attach an input event listener to adjust height whenever the content changes
-        textarea.addEventListener('input', () => adjustTextareaHeight(textarea));
     });
 }
 

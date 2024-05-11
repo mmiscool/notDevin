@@ -7,9 +7,13 @@ Function name must be {name}. If the current function name dose not match change
 This function will be part of a larger library.
 Do not use constructors. 
 
-## Function input arguments:
+Generate function as a statement. DO NOT define the primary function as an expression, arrow function or using a Function constructor.
+
+
 {functionArgs}
 
 {spec}
 
-{currentCodeContents}
+{code}
+
+{errorLog}

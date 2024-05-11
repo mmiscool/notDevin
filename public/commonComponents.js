@@ -21,3 +21,27 @@ export function spinner_show() {
 
 let projectName = new URLSearchParams(window.location.search).get('projectName');
 window.projectName = projectName;
+
+
+
+export function adjustTextareaHeight(textarea) {
+    // Reset the height to 'auto' to get the correct scroll height
+    textarea.style.height = 'auto';
+    // Set the height of textarea to its scroll height
+    textarea.style.height = `${textarea.scrollHeight + 15}px`;
+}
+export function setupTextareaAdjustment() {
+    // Select all textarea elements on the page
+    const textareas = document.querySelectorAll('textarea');
+
+    // Iterate through each textarea
+    textareas.forEach(textarea => {
+        // Initially adjust the height
+        adjustTextareaHeight(textarea);
+
+        // Attach an input event listener to adjust height whenever the content changes
+        textarea.addEventListener('input', () => adjustTextareaHeight(textarea));
+        //handle window resize
+        window.addEventListener('resize', () => adjustTextareaHeight(textarea));
+    });
+}

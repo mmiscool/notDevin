@@ -46,6 +46,16 @@ export function fileIOdelete(fileName, silent = false) {
 }
 
 
+export function fileIOdeleteFolder(folderName) {
+    return fs.rmdir(folderName, { recursive: true }, (err) => {
+        if (err) {
+            console.log(err);
+        } else {
+            if (fileIOdebugMode == true) console.log('Folder deleted successfully');
+        }
+    });
+}
+
 
 export async  function makeFolder(folderName) {
     // check if the folder exists

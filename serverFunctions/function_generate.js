@@ -1,6 +1,7 @@
 import { fileIOread, fileIOwrite, fileIOdelete, makeFolder } from "../fileIO.js";
 import { templateCallLLM } from '../llmCalls.js';
 import { executeCodeAsync } from '../testCode.js';
+import function_read from './function_read.js';
 
 
 
@@ -8,52 +9,39 @@ export default async function function_generate(inputObject) {
     const functionName = inputObject.functionName;
     const projectName = inputObject.projectName;
     const functionPath = `./projects/${projectName}/functions/${functionName}`;
-    const functionArgs = fileIOread(`${functionPath}/${functionName}.args.md`);
-    const code = await fileIOread(`${functionPath}/${functionName}.js`);
-    const spec = await fileIOread(`${functionPath}/${functionName}.spec.md`);
-    const errorLog = await fileIOread(`${functionPath}/error.log`);
+
+    let myFunction = function_read(inputObject);
+    myFunction.name = functionName;
+    myFunction.functionArgs= await addTextChunkLabel("function input arguments", myFunction.functionArgs);
+    myFunction.spec = await addTextChunkLabel("function specification", myFunction.spec);
+    myFunction.code = await addTextChunkLabel("current function", myFunction.code);
+    myFunction.errorLog = await addTextChunkLabel("error log", myFunction.errorLog);
 
 
-    console.log("functionGenerator", inputObject);
-
-    await makeFolder(functionPath);
-
-
-    let specFilePath = `${functionPath}/${functionName}.spec.md`;
-
-    let currentSpecFileContents = await fileIOread(specFilePath);
-
-    let currentCodeContents = await fileIOread(`${functionPath}/${functionName}.js`);
-
-    ///await launchEditor(specFilePath);
-    currentSpecFileContents = await fileIOread(specFilePath);
-
-    if (currentCodeContents == "") {
-        currentCodeContents = '## Current code \n' + `${currentCodeContents}`;
-    }
-
-
-    currentCodeContents = await templateCallLLM("mf", {
-        name: functionName,
-        spec: currentSpecFileContents,
-        currentCodeContents: currentCodeContents,
-        functionArgs: functionArgs
-    });
-
+    let currentCodeContents = await templateCallLLM("mf", myFunction);
 
     currentCodeContents = await replaceFirstFunctionName(currentCodeContents, functionName);
-    // promptResult = "this should make throw ERROR !!|";
+
     await fileIOwrite(`${functionPath}/${functionName}.js`, currentCodeContents);
 
-    let JSdocString = await templateCallLLM("mf.jsdoc", {
-        currentCodeContents: currentCodeContents,
-    });
+    let JSdocString = await templateCallLLM("mf.jsdoc", myFunction);
 
     await fileIOwrite(`${functionPath}/${functionName}.jsdoc`, JSdocString);
 
 
     await testTheCode(inputObject);
 }
+
+function addTextChunkLabel(label, textChunk) {
+    label = label.trim();
+    textChunk = textChunk.trim();
+    if (textChunk === "") return "";
+
+    return textChunk = `## ${label}: \n` + textChunk;
+}
+
+
+
 
 export async function testTheCode(inputObject) {
     //console.log(inputObject)
@@ -78,7 +66,7 @@ export async function testTheCode(inputObject) {
     if (testResult !== true) {
         console.log("Error executing code: ", testResult.errorString);
         // write the error to an error.log file
-        await fileIOwrite(`${functionPath}/error.log`,testResult.errorString);
+        await fileIOwrite(`${functionPath}/error.log`, testResult.errorString);
         console.log(`we wrote the results of test to ${functionPath}/error.log`)
         return false;
     } else {
