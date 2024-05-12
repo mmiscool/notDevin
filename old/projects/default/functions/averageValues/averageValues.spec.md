@@ -1,0 +1,1 @@
+return the average of all the values

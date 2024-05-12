@@ -1,0 +1,7 @@
+/**
+* Calculates the convex hull of a set of points using Andrew's monotone chain algorithm.
+*
+* @function convexHull
+* @param {Array.<Array>} points - An array of point coordinates, each represented as an [x, y] pair.
+* @returns {Array.<Array>} A list of the points on the convex hull in counter-clockwise order.
+*/

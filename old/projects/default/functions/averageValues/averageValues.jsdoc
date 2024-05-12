@@ -1,0 +1,6 @@
+/**
+ * Calculates the average of an array of numbers.
+ * @param {number[]} numbers - The array of numbers to calculate the average from.
+ * @return {number} The calculated average, or NaN if input is invalid.
+ * @throws Will return NaN when the input is not a valid array of finite numbers.
+ */

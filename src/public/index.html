@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark" />
+    <title>NotDevin</title>
+    <link rel="stylesheet" href="newStyle.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="toolbar">
+            Project: <input type="text" id="projectName" disabled>
+            <button id="showPlanEditorButton" class="tab">Plan Editor</button>
+            <button id="showFunctionsEditorButton" class="tab">Functions Editor</button>
+            <button id="compileButton" class="tab">Compile</button>
+
+        </div>
+        <div class="bottom">
+            <iframe id="functionsEditor" src="functionsEditor.html" width="100%" height="100%"></iframe>
+            <iframe id="planEditor" src="planEditor.html" width="100%" height="100%" style="display: none;"></iframe>
+            <iframe id="compileEditor" src="compileEditor.html" width="100%" height="100%" style="display: none;"></iframe>
+
+        </div>
+    </div>
+
+
+
+
+</body>
+<script type="module" src="index.js"></script>
+
+
+</html>
