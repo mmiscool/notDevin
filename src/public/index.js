@@ -5,9 +5,11 @@ import { spinner_insert, spinner_show, spinner_hide } from './commonComponents.j
 const functionsEditor = document.getElementById('functionsEditor');
 const planEditor = document.getElementById('planEditor');
 const compileEditor = document.getElementById('compileEditor');
+const settingsEditor = document.getElementById('settingsEditor');
 const showFunctionsEditorButton = document.getElementById('showFunctionsEditorButton');
 const showPlanEditorButton = document.getElementById('showPlanEditorButton');
 const compileButton = document.getElementById('compileButton');
+const settingsButton = document.getElementById('settingsButton');
 
 showFunctionsEditorButton.addEventListener('click', () => {
     hideIframes();
@@ -26,10 +28,18 @@ compileButton.addEventListener('click', async () => {
 });
 
 
+settingsButton.addEventListener('click', async () => {
+    hideIframes();
+    settingsEditor.style.display = 'block';
+
+});
+
+
 function hideIframes(){
     functionsEditor.style.display = 'none';
     planEditor.style.display = 'none';
     compileEditor.style.display = 'none';
+    settingsEditor.style.display = 'none';
 }
 
 

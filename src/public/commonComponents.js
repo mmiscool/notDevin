@@ -9,6 +9,8 @@ export function spinner_insert() {
 
 }
 
+spinner_insert();
+
 export function spinner_hide() {
     document.getElementById("spinner").style.display = "none";
 }
@@ -21,6 +23,7 @@ export function spinner_show() {
 
 let projectName = new URLSearchParams(window.location.search).get('projectName');
 window.projectName = projectName;
+console.log(projectName);
 
 /**
  * Dynamically creates a form in the specified container based on the provided data schema.
@@ -105,5 +108,35 @@ export function updateElementValues(data) {
             // manually trigger the change event
             resizeTextarea.call(element);
         }
+    });
+}
+// widgets.generateAllFunctionsButton.addEventListener("click", function_generate_all);
+// function function_generate_all() {
+//     const functionNameList = widgets.functionNameList.options;
+//     for (let i = 0; i < functionNameList.length; i++) {
+//         const functionName = functionNameList[i].value;
+//         sendToApi("function_generate", { functionName: functionName }, false);
+//     }
+// }
+
+
+
+export function updateSelectOptions(selectID, options) {
+    const select = document.getElementById(selectID);
+    // Clear existing options
+    select.innerHTML = '';
+    select.size = options.length + 1;
+
+    // Loop through the array of options
+    options.forEach(function (optionText) {
+        // Create a new option element
+        var option = document.createElement('option');
+
+        // Set the text content and value of the option
+        option.textContent = optionText;
+        option.value = optionText;
+        console.log(select, option);
+        // Add the option to the select element
+        select.appendChild(option);
     });
 }

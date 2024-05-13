@@ -10,11 +10,7 @@ export default async function function_generate(inputObject) {
     let myFunction = await function_read(inputObject);
     const functionName = myFunction._id;
 
-
-
-    console.log("here is the function object", myFunction);
-
-    myFunction.errorLogs
+    //console.log("here is the function object", myFunction);
 
 
     myFunction.arguments = await addTextChunkLabel("function input arguments", myFunction.arguments);
@@ -23,10 +19,10 @@ export default async function function_generate(inputObject) {
     myFunction.errorLogs = await addTextChunkLabel("error log", myFunction.errorLogs);
 
 
-    let code = await templateCallLLM("mf", myFunction);
+    let code = await templateCallLLM("makeFunction", myFunction);
     myFunction.code = await replaceFirstFunctionName(code, functionName);
 
-    let jsdoc = await templateCallLLM("mf.jsdoc", myFunction);
+    let jsdoc = await templateCallLLM("makeFunction.jsdoc", myFunction);
 
     const errorLogs = await executeCodeAsync(code);
 
@@ -55,7 +51,7 @@ export async function executeCodeAsync(codeString) {
     try {
         console.log("Execute code test result ");
         console.log(await eval(codeString + ";'';"));
-        return true; // Return true if execution was successful
+        return ""; // Return true if execution was successful
     } catch (error) {
         console.error("An error occurred while executing the code:", codeString, error);
         //return the error message as a JSON object
@@ -69,32 +65,30 @@ export async function executeCodeAsync(codeString) {
 
 
 
-function cleanupMarkdownCodeBlock(codeBlock) {
+async function cleanupMarkdownCodeBlock(codeBlock) {
     //remove the string "```javascript" from the beginning of the code block
     //remove the string "```" from the end of the code block
-    return codeBlock.replace("```javascript", "").replace("```", "");
-
+    const newCodeBlock= await codeBlock.replace("```javascript", "").replace("```", "");
+    return newCodeBlock;
 }
 
 
 
 
-function cleanupLeadingAndTrailingSpaces(codeBlock) {
+async function cleanupLeadingAndTrailingSpaces(codeBlock) {
     // get rid of leading and trailing spaces and leading and trailing newlines
     let trimedResult = codeBlock.trim();
     // get rid of leading and trailing newlines
-    trimedResult = trimedResult.replace(/^\n+|\n+$/g, '');
+    trimedResult = await trimedResult.replace(/^\n+|\n+$/g, '');
     return trimedResult;
 }
 
 
 
 
-export function replaceFirstFunctionName(codeSnippet, newName) {
-    codeSnippet = cleanupMarkdownCodeBlock(codeSnippet);
-    codeSnippet = cleanupLeadingAndTrailingSpaces(codeSnippet);
-
-
+export async function replaceFirstFunctionName(codeSnippet, newName) {
+    codeSnippet = await cleanupMarkdownCodeBlock(codeSnippet);
+    codeSnippet = await cleanupLeadingAndTrailingSpaces(codeSnippet);
 
     // Regular expression to match function names in different declaration styles
     const functionRegex = /function\s+([\w$]+)\s*\(|([\w$]+)\s*=\s*function\s*\(/;

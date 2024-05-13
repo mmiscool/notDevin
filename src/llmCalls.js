@@ -58,9 +58,32 @@ export async function installModel(modelName, forceInstall = false) {
 
 
   try {
-    const response = await ollama.pull({ model: modelName });
+    let currentDigestDone = false
+    const stream = await ollama.pull({ model: modelName, stream: true })
+    for await (const part of stream) {
+      if (part.digest) {
+        let percent = 0
+        if (part.completed && part.total) {
+          percent = Math.round((part.completed / part.total) * 100)
+        }
+        process.stdout.clearLine(0) // Clear the current line
+        process.stdout.cursorTo(0) // Move cursor to the beginning of the line
+        process.stdout.write(`${part.status} ${percent}%...`) // Write the new text
+        if (percent === 100 && !currentDigestDone) {
+          console.log() // Output to a new line
+          currentDigestDone = true
+        } else {
+          currentDigestDone = false
+        }
+      } else {
+        console.log(part.status)
+      }
+    }
+
+
+    // const response = await ollama.pull({ model: modelName });
     console.log(`Model installed successfully!`);
-    console.log(response);
+    // console.log(response);
   } catch (error) {
     console.error(`Model installation failed!`);
     console.error(error);
@@ -112,10 +135,10 @@ export async function templateCallLLM(templateName, data) {
   await installModel(data.model);
 
   for (const key in data) {
-    template = template.replace(`{${key}}`, data[key]);
+    template = await template.replace(`{${key}}`, data[key]);
   }
 
-  return callLLM(template, data.model, data.user);
+  return await callLLM(template, data.model, data.user);
 }
 
 //listModels();

@@ -1,6 +1,4 @@
-
-
-export async function sendToApi(apiName, objectToSend, spinner = false) {
+export async function sendToApi(apiName, objectToSend, spinner = true) {
     const apiTarget = './api'; // The API endpoint URL
 
     const newObjectToSend = JSON.parse(JSON.stringify(objectToSend));
@@ -23,7 +21,7 @@ export async function sendToApi(apiName, objectToSend, spinner = false) {
 
     if (!spinner) {
         // Return the fetch promise directly
-        return fetch(apiTarget, fetchOptions)
+        return await fetch(apiTarget, fetchOptions)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);

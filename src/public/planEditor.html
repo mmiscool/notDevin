@@ -6,21 +6,128 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light dark" />
     <title>NotDevin</title>
-    <link rel="stylesheet" href="style.css">
+
+
+
+
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 167.4px 1.2fr;
+            grid-template-rows: 40px 3.2fr 1.1fr 43.5px;
+            gap: 0px 0px;
+            grid-auto-flow: row;
+            grid-template-areas:
+                "toolBar toolBar"
+                "leftTop rightTop"
+                "leftMiddle rightMiddle"
+                "leftBottom rightBottom";
+            width: 100%;
+            height: 100%;
+        }
+
+        .toolBar {
+            grid-area: toolBar;
+        }
+
+        .leftTop {
+            grid-area: leftTop;
+            overflow:scroll;
+        }
+
+        .rightTop {
+            grid-area: rightTop;
+        }
+
+        .rightMiddle {
+            grid-area: rightMiddle;
+        }
+
+        .rightBottom {
+            grid-area: rightBottom;
+        }
+
+        .leftMiddle {
+            grid-area: leftMiddle;
+        }
+
+        .leftBottom {
+            grid-area: leftBottom;
+        }
+
+        div {
+            border: 1px solid rgb(154, 38, 38);
+        }
+
+        #submit {
+            width: 100%;
+            height: 100%;
+        }
+
+        #prompt {
+            width: 100%;
+            height: 100%;
+        }
+
+        #modelsList {
+            width: 100%;
+            
+        }
+
+        .chatBalloon {
+            background-color: #8b9210;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px;
+        }
+    </style>
+
+
 </head>
 
 <body>
-    <div id="spinner" class="overlay">
-        <svg class="spinner" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}</style><path class="spinner_0XTQ" d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"/></svg>
-    </div>
-    
-    <div class="toolbar">
-        Project: <input type="text" id="projectName">
-        <button id="listFunctionsButton">List Functions</button><button id="generateAllFunctionsButton">Generate All Functions</button>
-    </div>
     <div class="container">
- 
+        <div class="toolBar"></div>
+        <div class="leftTop">
+            <h3>Select Model:</h3>
+            <select id="modelsList" size="10"></select>
+        </div>
+        <div class="rightTop">
+            <h3>Chat:</h3>
+            <div id="chat" class="chatBalloon"></div>
+
+            <div id="chat" class="chatBalloon">
+                <p>Hi</p>
+                <p>Hi</p>
+                <p>Hi</p>
+            </div>
+            <div id="chat" class="chatBalloon"></div>
+            <div id="chat" class="chatBalloon"></div>
+            <div id="chat" class="chatBalloon"></div>
+            <div id="chat" class="chatBalloon"></div>
+            <div id="chat" class="chatBalloon"></div>
+
+        </div>
+        <div class="leftMiddle"></div>
+        <div class="rightMiddle">
+            <textarea id="prompt" placeholder="Enter chat prompt"></textarea>
+        </div>
+        <div class="leftBottom">
+        </div>
+        <div class="rightBottom">
+            <button id="submit">Submit</button>
+        </div>
     </div>
 </body>
 <script type="module" src="./planEditor.js"></script>
+
 </html>

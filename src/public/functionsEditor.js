@@ -1,5 +1,5 @@
 import { sendToApi } from "./APIajaxRequest.js";
-import { spinner_insert, generateForm, updateElementValues} from './commonComponents.js';
+import { spinner_insert, generateForm, updateElementValues, updateSelectOptions} from './commonComponents.js';
 
 
 let formFields;
@@ -8,7 +8,7 @@ async function setupForm() {
     formFields = await sendToApi("functions/schema", {});
     //alert(`formFields: ${JSON.stringify(formFields)}`);
     generateForm(formFields, "functionForm");
-    function_list();
+    await function_list();
 
 }
 setupForm();
@@ -30,8 +30,8 @@ async function function_delete() {
     const id = document.getElementById("_id").value;
     const response = await sendToApi("functions/delete", { _id: id });
     console.log(response);
-    function_list();
-    function_new();
+    await function_list();
+    await function_new();
 }
 
 
@@ -52,7 +52,7 @@ async function function_save() {
     console.log(response);
 
     await function_read(saveObject.functionName);
-    function_list();
+    await function_list();
 
 }
 
@@ -96,39 +96,4 @@ async function function_generate() {
 
 
 
-// widgets.generateAllFunctionsButton.addEventListener("click", function_generate_all);
-
-// function function_generate_all() {
-//     const functionNameList = widgets.functionNameList.options;
-//     for (let i = 0; i < functionNameList.length; i++) {
-//         const functionName = functionNameList[i].value;
-
-//         sendToApi("function_generate", { functionName: functionName }, false);
-//     }
-// }
-
-
-
-
-
-
-function updateSelectOptions(selectID, options) {
-    const select = document.getElementById(selectID);
-    // Clear existing options
-    select.innerHTML = '';
-    select.size = options.length + 1;
-
-    // Loop through the array of options
-    options.forEach(function (optionText) {
-        // Create a new option element
-        var option = document.createElement('option');
-
-        // Set the text content and value of the option
-        option.textContent = optionText;
-        option.value = optionText;
-
-        // Add the option to the select element
-        select.appendChild(option);
-    });
-}
 

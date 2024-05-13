@@ -35,7 +35,7 @@ div {
 /* Style for readonly textareas */
 textarea[readonly] {
     background-color: #ff000024;
-
+    overflow:scroll;
 }
 
 
@@ -46,6 +46,10 @@ input {
     width: calc(100% - 3px);
     height: auto;
     margin: 3px;
+    overflow:scroll;
+
+    /* prevent word wrap */
+    white-space: nowrap;
 }
 
 select {
