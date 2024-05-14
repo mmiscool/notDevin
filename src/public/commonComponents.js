@@ -96,7 +96,7 @@ export function generateForm(schema, containerId) {
 const resizeTextarea = function () {
     console.log(`resizing textarea ${this.id}`)
     this.style.height = 'auto';
-    this.style.height = (this.scrollHeight + 10) + 'px';
+    this.style.height = (this.scrollHeight + 30) + 'px';
 
 };
 

@@ -23,6 +23,22 @@ async function invokeLLM(props) {
   }
 }
 
+export async function invokeLLMraw(props) {
+  try {
+    console.log(`Running prompt...`);
+    const response = await ollama.generate(props);
+    //console.log(`${response.message.content}\n`);
+    return response;  // Return the response content
+  } catch (error) {
+    console.error(`Query failed!`);
+    console.error(error);
+    return null;  // Return null in case of error
+  }
+
+}
+
+
+
 export async function callLLM(prompt, model = "codegemma", user = "user") {
   console.log(`running Prompt: --------------------------------------------------------- \n${prompt}`);
   let chatConfig = {

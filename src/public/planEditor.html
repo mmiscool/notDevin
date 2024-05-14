@@ -68,12 +68,12 @@
             border: 1px solid rgb(154, 38, 38);
         }
 
-        #submit {
+        #submitButton {
             width: 100%;
             height: 100%;
         }
 
-        #prompt {
+        #promptTextarea {
             width: 100%;
             height: 100%;
         }
@@ -84,7 +84,27 @@
         }
 
         .chatBalloon {
-            background-color: #8b9210;
+            border: 4px solid #636574;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px;
+        }
+        .chatLine{
+            border: 4px solid #636574;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        .chatLineUser{
+            border: 4px solid #ffea00;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        .chatLineHighlighted{
+            background-color: #ff0000;
             border-radius: 5px;
             padding: 10px;
             margin: 10px;
@@ -101,30 +121,19 @@
             <h3>Select Model:</h3>
             <select id="modelsList" size="10"></select>
         </div>
-        <div class="rightTop">
+        <div id="chatMessagesArea" class="rightTop">
             <h3>Chat:</h3>
-            <div id="chat" class="chatBalloon"></div>
 
-            <div id="chat" class="chatBalloon">
-                <p>Hi</p>
-                <p>Hi</p>
-                <p>Hi</p>
-            </div>
-            <div id="chat" class="chatBalloon"></div>
-            <div id="chat" class="chatBalloon"></div>
-            <div id="chat" class="chatBalloon"></div>
-            <div id="chat" class="chatBalloon"></div>
-            <div id="chat" class="chatBalloon"></div>
 
         </div>
         <div class="leftMiddle"></div>
         <div class="rightMiddle">
-            <textarea id="prompt" placeholder="Enter chat prompt"></textarea>
+            <textarea id="promptTextarea" placeholder="Enter chat prompt">Why is the sky blue?</textarea>
         </div>
         <div class="leftBottom">
         </div>
         <div class="rightBottom">
-            <button id="submit">Submit</button>
+            <button id="submitButton">Submit</button>
         </div>
     </div>
 </body>

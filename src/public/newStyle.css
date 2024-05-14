@@ -39,7 +39,13 @@ textarea[readonly] {
 }
 
 
-button,
+button{
+    width: calc(100% - 3px);
+    height: auto;
+    margin: 3px;
+    overflow: hidden;
+    white-space: nowrap;
+}
 textarea,
 input {
 

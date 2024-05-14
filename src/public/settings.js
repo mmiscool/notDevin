@@ -5,7 +5,7 @@ import { spinner_insert, generateForm, updateSelectOptions } from './commonCompo
 document.getElementById("listModelsButton").addEventListener("click", listModels);
 const modelName = document.getElementById("modelName");
 
-async function listModels() {
+export async function listModels() {
     const myModelsList = await sendToApi("settings/listModels", {});
     const listOfModelNames = [];
 
