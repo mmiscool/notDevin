@@ -29,7 +29,7 @@ In my own personal attempt at hitting this benchmark I am using the following gu
     * Additional to be determined testing 
 
 
-Hopefully this highly structured approach bears fruit. Using a customized build system automatically managing imports between files with individually validated single functions as the building blocks should guarantee no syntax errors at build time. Coupling this with a complete history of each function specification and promt execution engaging automatically generated videos could be created showing the conversation between bots in the system and users updating the specifications. Every function has a story to tell from initial formation to modification to handle specific problems or missing functionality. 
+Hopefully this highly structured approach bears fruit. Using a customized build system automatically managing imports between files with individually validated single functions as the building blocks should guarantee no syntax errors at build time. Coupling this with a complete history of each function specification and prompt execution engaging automatically generated videos could be created showing the conversation between bots in the system and users updating the specifications. Every function has a story to tell from initial formation to modification to handle specific problems or missing functionality. 
 
 
 

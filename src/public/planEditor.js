@@ -1,7 +1,7 @@
 import { sendToApi } from "./APIajaxRequest.js";
 import { spinner_insert, generateForm, updateSelectOptions } from './commonComponents.js';
 
-import {listModels} from './settings.js';
+
 
 const promptTextarea = document.getElementById("promptTextarea");
 const chatMessagesArea = document.getElementById("chatMessagesArea");
@@ -15,6 +15,47 @@ spinner_insert();
 let contextWindow = [];
 
 
+
+export async function listModels() {
+    const myModelsList = await sendToApi("settings/listModels", {});
+    const listOfModelNames = [];
+
+
+    console.log(myModelsList);
+    for (const model of myModelsList) {
+        console.log(model);
+        let modelNamToAdd = model.name;
+        // split string on : and get the first element
+        modelNamToAdd = modelNamToAdd.split(":")[0];
+
+        listOfModelNames.push(modelNamToAdd);
+    }
+
+    await console.log(listOfModelNames);
+    await updateSelectOptions("modelsList", listOfModelNames);
+
+    // get the selected model from local storage
+    const selectedModel = localStorage.getItem("selectedModel");
+    if (selectedModel) {
+        modelsList.value = selectedModel;
+    }
+
+}
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', async function () {
+    await listModels();
+});
+
+
+
+
+
+
+
 async function submitPrompt() {
 
     const UserChatBalloon = document.createElement("div");
@@ -22,7 +63,8 @@ async function submitPrompt() {
     UserChatBalloon.innerHTML = `<b>${promptTextarea.value}<b>`;
     chatMessagesArea.appendChild(UserChatBalloon);
 
-
+    // store the currently selected model to local storage
+    localStorage.setItem("selectedModel", modelsList.value);
 
     const response = await sendToApi("planner/chat", {
         model: modelsList.value,
