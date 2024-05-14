@@ -9,8 +9,6 @@ If it is possible to accomplish this benchmark task I would expect it to be usef
 
 I encourage any one capable of attempting the challenge to make a go of it. There will be a general specification for what is expected from a BREP kernel and an overview of the major components that are required to form a functional BREP kernel. The BREP kernels today represent more than 10,000 years of collective developer time dedicated to bring them in to existence with thousands of people actively being employed to develop starting in the 1970s and continuing to this very day. If an AI tool can accomplish this task surely it is ready for prime time use. This particular challenge should be obtainable with in the next few years. 
 
-I personally will commit $10,000 to the first team to be able to generate a BREP CAD kernel that can accomplish all the goals layed out in the BREP kernel spec in a replicable fashion using AI with source code released under an MIT license.
-
 
 
 
