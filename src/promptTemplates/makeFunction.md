@@ -7,6 +7,8 @@ Function name must be {_id}. If the current function name dose not match change 
 This function will be part of a larger library.
 Do not use constructors. 
 
+{listOfExistingFunctions}
+
 Generate function as a statement. DO NOT define the primary function as an expression, arrow function or using a Function constructor.
 
 

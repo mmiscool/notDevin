@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Compliant Mechanism with Electromagnet</title>
+    <style>
+        #frame {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            border: 1px solid black;
+        }
+        #coil {
+            width: 50px;
+            height: 50px;
+            background-color: copper;
+            position: absolute;
+            top: 125px;
+            left: 125px;
+        }
+        #mechanism {
+            width: 100px;
+            height: 20px;
+            background-color: lightgrey;
+            position: absolute;
+            top: 140px;
+            left: 100px;
+        }
+        #magnet {
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            position: absolute;
+            top: 0;
+            left: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div id="frame">
+        <div id="coil"></div>
+        <div id="mechanism">
+            <div id="magnet"></div>
+        </div>
+    </div>
+    <script>
+        const coil = document.getElementById('coil');
+        const magnet = document.getElementById('magnet');
+        const mechanism = document.getElementById('mechanism');
+
+        function moveMechanism() {
+				console.log("you clicked");
+            mechanism.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                mechanism.style.transform = 'translateY(0px)';
+            }, 100);
+        }
+
+        coil.addEventListener('click', moveMechanism);
+    </script>
+</body>
+</html>

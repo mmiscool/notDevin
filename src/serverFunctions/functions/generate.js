@@ -3,6 +3,7 @@ import { fileIOread } from "../../fileIO.js";
 import { templateCallLLM } from '../../llmCalls.js';
 import function_read from './read.js';
 import function_save from "./save.js";
+import { function_list_with_arguments } from "./list.js";
 
 
 
@@ -17,6 +18,11 @@ export default async function function_generate(inputObject) {
     myFunction.specification = await addTextChunkLabel("function specification", myFunction.specification);
     myFunction.code = await addTextChunkLabel("current function", myFunction.code);
     myFunction.errorLogs = await addTextChunkLabel("error log", myFunction.errorLogs);
+
+    const listOfExistingFunctions = await function_list_with_arguments(inputObject);
+    myFunction.listOfExistingFunctions = await addTextChunkLabel("Existing functions you may use", listOfExistingFunctions);
+
+
 
 
     let code = await templateCallLLM("makeFunction", myFunction);
@@ -33,7 +39,8 @@ export default async function function_generate(inputObject) {
         _id: inputObject._id,
         jsdoc,
         code,
-        errorLogs
+        errorLogs,
+        lastGenerated: new Date().toISOString(),
     });
 }
 
