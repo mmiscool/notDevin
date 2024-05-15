@@ -14,9 +14,16 @@ async function setupForm() {
 setupForm();
 
 
+
+const generateAllFunctionsButton = document.getElementById("generateAllFunctionsButton");
+
+
+
+
+
 document.getElementById("newFunctionButton").addEventListener("click", function_new);
 
-function function_new() {
+async function function_new() {
     // loop through the formFields object and set the value of each element to an empty string
     for (let key in formFields) {
         document.getElementById(key).value = "";
@@ -76,6 +83,7 @@ document.getElementById("functionNameList").addEventListener("change", function 
 
 
 async function function_read(functionName) {
+    function_new();
     const response = await sendToApi("functions/read", { _id: functionName});
     console.log("this is the record we got from the server", response);
     updateElementValues(response);

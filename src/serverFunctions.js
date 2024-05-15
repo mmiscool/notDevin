@@ -1,4 +1,4 @@
-const debugMode = false;
+const debugMode = true;
 
 
 export function serverFunctionsCall(inputObject){
@@ -7,6 +7,8 @@ export function serverFunctionsCall(inputObject){
     if (debugMode)console.log(inputObject);
 
     const action = inputObject.action;
+
+    console.log(`Action: ${action}`);
 
     // Return the Promise directly
     return import(`./serverFunctions/${action}.js`)

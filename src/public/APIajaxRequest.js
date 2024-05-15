@@ -10,6 +10,8 @@ export async function sendToApi(apiName, objectToSend, spinner = true) {
     // Show the spinner before making the request
     if (spinner) document.getElementById("spinner").style.display = "block";
 
+    console.log(newObjectToSend);
+
     // Prepare the fetch options
     const fetchOptions = {
         method: 'POST', // Method type

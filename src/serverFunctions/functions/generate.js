@@ -21,10 +21,13 @@ export default async function function_generate(inputObject) {
 
     let code = await templateCallLLM("makeFunction", myFunction);
     myFunction.code = await replaceFirstFunctionName(code, functionName);
+    code = myFunction.code;
 
     let jsdoc = await templateCallLLM("makeFunction.jsdoc", myFunction);
 
-    const errorLogs = await executeCodeAsync(code);
+    const errorLogsObject = await executeCodeAsync(code);
+
+    const errorLogs = errorLogsObject.errorString;
 
     return await function_save({
         _id: inputObject._id,
@@ -34,9 +37,10 @@ export default async function function_generate(inputObject) {
     });
 }
 
-function addTextChunkLabel(label, textChunk) {
+
+function addTextChunkLabel(label, textChunk = "") {
     console.log("addTextChunkLabel", label, textChunk);
-    label = label.trim();
+    //label = label.trim();
     textChunk = textChunk.trim();
     if (textChunk === "") return "";
 
@@ -68,7 +72,7 @@ export async function executeCodeAsync(codeString) {
 async function cleanupMarkdownCodeBlock(codeBlock) {
     //remove the string "```javascript" from the beginning of the code block
     //remove the string "```" from the end of the code block
-    const newCodeBlock= await codeBlock.replace("```javascript", "").replace("```", "");
+    const newCodeBlock = await codeBlock.replace("```javascript", "").replace("```", "");
     return newCodeBlock;
 }
 

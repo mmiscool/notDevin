@@ -118,3 +118,106 @@ async function submitPrompt() {
     console.log(response);
     //document.getElementById("response").innerText = response;
 }
+
+
+
+// When the user click the generateFunctionsFromSelected button call the generateFunctionsFromSelected function
+document.getElementById("generateFunctionsFromSelected").addEventListener("click", generateFunctionsFromSelected);
+
+async function generateFunctionsFromSelected() {
+    // get a list of all the elements with the class chatLineHighlighted
+    const highlightedElements = document.getElementsByClassName("chatLineHighlighted");
+    // create an array to store the text of the highlighted elements
+    const functionsToMake = [];
+    // loop over each highlighted element and push the text to the highlightedText array
+    for (const element of highlightedElements) {
+        let functionStringDefinition = element.innerText;
+        functionStringDefinition = functionStringDefinition.trim();
+
+        /*
+        Strings will look like this:
+        * createRationalNurbsCurve(controlPoints, weights, degree): Creates a Rational NURBS curve given control points, corresponding weights, and the curve's degree.
+        */
+
+        let newFunctionName = functionStringDefinition.split("(")[0].trim();
+        // remove the first word from the string if there are more than one word
+        newFunctionName = newFunctionName.split(" ").slice(1).join(" ");
+
+
+        let argumentsList = functionStringDefinition.split("(")[1].split(")")[0].trim();
+        let specification = functionStringDefinition.split(":")[1].trim();
+
+
+        const functionToMake = {
+            _id: newFunctionName,
+            projectName: window.projectName,
+            arguments: argumentsList,
+            specification: specification,
+
+        };
+
+
+        functionsToMake.push(functionToMake);
+        console.log(functionsToMake);
+    }
+
+
+    const functionsToMakeRequestObject = {
+        functionsToMake: functionsToMake
+    };
+    sendToApi("planner/addFunctions", functionsToMakeRequestObject);
+
+}
+
+
+/*
+        _id: {
+            type: "string",
+            userEditable: true,
+            widget: "input",
+            label: "Function Name",
+            description: "The name of the function."
+        },
+        projectName: {
+            type: "string",
+            userEditable: false,
+            widget: "input",
+            label: "Project Name",
+            description: "The name of the project this function belongs to."
+        },
+        arguments: {
+            type: "string",
+            userEditable: true,
+            widget: "textarea",
+            label: "Arguments",
+            description: "The arguments of the function."
+        },
+        specification: {
+            type: "string",
+            userEditable: true,
+            widget: "textarea",
+            label: "Specification",
+            description: "The specification of the function."
+        },
+        jsdoc: {
+            type: "string",
+            userEditable: true,
+            widget: "textarea",
+            label: "JSDoc",
+            description: "The JSDoc of the function."
+        },
+        code: {
+            type: "string",
+            userEditable: true,
+            widget: "textarea",
+            label: "Code",
+            description: "The code of the function."
+        },
+        errorLogs: {
+            type: "string",
+            userEditable: false,
+            widget: "textarea",
+            label: "Error Logs",
+            description: "The error logs of the function."
+        },
+*/

@@ -23,7 +23,7 @@
         .container {
             display: grid;
             grid-template-columns: 167.4px 1.2fr;
-            grid-template-rows: 40px 3.2fr 1.1fr 43.5px;
+            grid-template-rows: 40px 3.2fr 100px 43.5px;
             gap: 0px 0px;
             grid-auto-flow: row;
             grid-template-areas:
@@ -41,16 +41,16 @@
 
         .leftTop {
             grid-area: leftTop;
-            overflow:scroll;
+            overflow: scroll;
         }
 
         .rightTop {
             grid-area: rightTop;
+            overflow: scroll;
         }
 
         .rightMiddle {
             grid-area: rightMiddle;
-            overflow: scroll;
         }
 
         .rightBottom {
@@ -81,7 +81,7 @@
 
         #modelsList {
             width: 100%;
-            
+
         }
 
         .chatBalloon {
@@ -89,22 +89,24 @@
             border-radius: 5px;
             padding: 10px;
             margin: 10px;
+            white-space: pre-wrap;
         }
-        .chatLine{
+
+        .chatLine {
             border: 4px solid #636574;
             border-radius: 5px;
             padding: 10px;
             margin: 10px;
         }
 
-        .chatLineUser{
+        .chatLineUser {
             border: 4px solid #ffea00;
             border-radius: 5px;
             padding: 10px;
             margin: 10px;
         }
 
-        .chatLineHighlighted{
+        .chatLineHighlighted {
             background-color: #ff0000;
             border-radius: 5px;
             padding: 10px;
@@ -117,19 +119,23 @@
 
 <body>
     <div class="container">
-        <div class="toolBar"></div>
+        <div class="toolBar">
+            <button id="generateFunctionsFromSelected">Generate Functions</button>
+
+        </div>
         <div class="leftTop">
             <h3>Select Model:</h3>
             <select id="modelsList" size="10"></select>
         </div>
         <div id="chatMessagesArea" class="rightTop">
             <h3>Chat:</h3>
-
-
         </div>
         <div class="leftMiddle"></div>
         <div class="rightMiddle">
-            <textarea id="promptTextarea" placeholder="Enter chat prompt">Why is the sky blue?</textarea>
+            <textarea id="promptTextarea" placeholder="Enter chat prompt">Make a list of functions required to be present in a full featured NURBS library that handles 3D surfaces, curves, intersections and any other utility functions required. This is to plan implimenting these functions in javascript. 
+
+Make the list in this format:
+* functionName(arg1, arg2) : Short description of what function does.</textarea>
         </div>
         <div class="leftBottom">
         </div>

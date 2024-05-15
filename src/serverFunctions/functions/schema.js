@@ -50,6 +50,20 @@ export default function schema() {
             label: "Error Logs",
             description: "The error logs of the function."
         },
+        lastGenerated: {
+            type: "string",
+            userEditable: false,
+            widget: "input",
+            label: "Last Generated",
+            description: "The date the function was last generated."
+        },
+        needsGeneration: {
+            type: "string",
+            userEditable: false,
+            widget: "input",
+            label: "Needs Generation",
+            description: "Does the function need to be generated?"
+        }
 
     }
 

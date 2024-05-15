@@ -8,6 +8,18 @@ export default async function function_save(inputObject) {
     delete inputObject.action;
     delete inputObject.timeStamp;
 
+
+    // check if te object contains all the required fields specified in the schema and if fields are missing add them with an empty string
+ for (const key in db.schema) {
+        if (!inputObject[key]) {
+            console.log("missing key", key);
+            inputObject[key] = "";
+        }
+    }
+
+
+
+
     await db.db.writeDocument(inputObject);
 
     return await function_read(inputObject);
