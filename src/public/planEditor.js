@@ -26,7 +26,7 @@ export async function listModels() {
         console.log(model);
         let modelNamToAdd = model.name;
         // split string on : and get the first element
-        modelNamToAdd = modelNamToAdd.split(":")[0];
+        //modelNamToAdd = modelNamToAdd.split(":")[0];
 
         listOfModelNames.push(modelNamToAdd);
     }
@@ -48,33 +48,70 @@ export async function listModels() {
 
 document.addEventListener('DOMContentLoaded', async function () {
     await listModels();
+
+    promptTextarea.value = localStorage.lastTextPrompt || `
+Make a list of functions required to be present in a full featured NURBS library that handles 3D surfaces, curves, intersections and any other utility functions required. 
+This is to plan implementing these functions in javascript. 
+
+also include a list of functions required to build a complete BREP kernel including extrude, revolve, sweep, loft, fillet, chamfer and shell.
+
+In the description for each function include a list of functions that function will depend on.  
+
+Make the list in this format:
+* functionName(arg1, arg2) : Short description of what function does. Depends on (functionName, functionName).
+    `;
 });
 
 
 
+let lastModelUsed = "";
+
+document.getElementById("parseInputString").addEventListener("click", function () {
+    submitPrompt(true)
+});
 
 
-
-
-async function submitPrompt() {
+async function submitPrompt(doNotSend = false) {
 
     const UserChatBalloon = document.createElement("div");
     UserChatBalloon.classList.add("chatBalloon");
     UserChatBalloon.innerHTML = `<b>${promptTextarea.value}<b>`;
+
+    const listOfUserInput = promptTextarea.value.split("\n").map(line => line.trim()).filter(line => line.length > 0);
+
+    await outputListToChatArea(listOfUserInput, UserChatBalloon, true) 
+
+
+
     chatMessagesArea.appendChild(UserChatBalloon);
+
+    if (doNotSend === true) return;
 
     // store the currently selected model to local storage
     localStorage.setItem("selectedModel", modelsList.value);
+
+    if (modelsList.value !== lastModelUsed) {
+        // clear the chatMessagesArea
+        //chatMessagesArea.innerHTML = "";
+        lastModelUsed = modelsList.value;
+
+        contextWindow = [];
+    }
 
     const response = await sendToApi("planner/chat", {
         model: modelsList.value,
         role: 'user',
         prompt: promptTextarea.value,
+        options: {
+            seed: 123,
+            temperature: 0,
+            keep_alive: '24h',
+        },
         context: contextWindow
     });
 
 
-
+    localStorage.lastTextPrompt = promptTextarea.value;
 
 
     // create new div with css class of chatBalloon
@@ -86,11 +123,32 @@ async function submitPrompt() {
 
 
     const responseAsLinesArray = response.response.split("\n").map(line => line.trim()).filter(line => line.length > 0);
+    await outputListToChatArea(responseAsLinesArray, chatBalloon) 
 
+
+    chatMessagesArea.appendChild(chatBalloon);
+
+
+
+    contextWindow = response.context;
+
+
+
+    console.log(response);
+    //document.getElementById("response").innerText = response;
+}
+
+
+
+async function outputListToChatArea(responseAsLinesArray, chatBalloon, addAstrics = false) {
     // loop over each line and make a div with the line as text and append it to chatBalloon
-    for (const line of responseAsLinesArray) {
+    for (let line of responseAsLinesArray) {
         const chatLine = document.createElement("div");
+        if (addAstrics) {
+            line = " * " + line ;
+        }
         chatLine.innerText = line;
+        console.log(line);
         chatLine.classList.add("chatLine");
         chatBalloon.appendChild(chatLine);
         chatLine.addEventListener("click", function () {
@@ -106,18 +164,17 @@ async function submitPrompt() {
         });
 
     }
-
-    chatMessagesArea.appendChild(chatBalloon);
-
-
-
-    contextWindow = response.context;
-
-
-
-    console.log(response);
-    //document.getElementById("response").innerText = response;
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

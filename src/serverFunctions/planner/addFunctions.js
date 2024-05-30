@@ -10,8 +10,15 @@ export default async function addFunctions(inputObject) {
     for (const functionToMake of inputObject.functionsToMake) {
         //Remove all* characters from the functionToMake._id and trim any white space
         functionToMake._id = functionToMake._id.replace(/[*]/g, "").trim();
+        // remove all ` charachters from the functionToMake._id
+        functionToMake._id = functionToMake._id.replace(/`/g, "").trim();
+
         functionToMake.needsGeneration = "true";
         await function_save(functionToMake);
+    }
+
+
+    for (const functionToMake of inputObject.functionsToMake) {
         await function_generate(functionToMake);
     }
 

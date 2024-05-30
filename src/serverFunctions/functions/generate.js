@@ -31,15 +31,11 @@ export default async function function_generate(inputObject) {
 
     let jsdoc = await templateCallLLM("makeFunction.jsdoc", myFunction);
 
-    const errorLogsObject = await executeCodeAsync(code);
-
-    const errorLogs = errorLogsObject.errorString;
 
     return await function_save({
         _id: inputObject._id,
         jsdoc,
         code,
-        errorLogs,
         lastGenerated: new Date().toISOString(),
     });
 }

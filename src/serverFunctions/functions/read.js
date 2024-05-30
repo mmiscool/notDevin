@@ -1,6 +1,11 @@
 import { db } from "./schema.js";
 
-export default function function_read(inputObject) {
+
+
+export default async function function_read(inputObject) {
     //console.log("function_read", inputObject);
-    return db.db.readDocumentById(inputObject._id);
+
+    const functionToRead = await db.db.readDocumentById(inputObject._id);
+
+    return functionToRead
 }

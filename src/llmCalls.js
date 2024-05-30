@@ -11,6 +11,7 @@ async function invokeLLM(props) {
       model: props.model,
       messages: [{ role: props.role, content: props.content }],
       options: {
+        "keep_alive":'24h',
         "num_ctx": 100000,
       }
     });
@@ -27,7 +28,7 @@ export async function invokeLLMraw(props) {
   try {
     console.log(`Running prompt...`);
     const response = await ollama.generate(props);
-    //console.log(`${response.message.content}\n`);
+    //console.log(response);
     return response;  // Return the response content
   } catch (error) {
     console.error(`Query failed!`);

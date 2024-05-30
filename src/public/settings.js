@@ -15,7 +15,7 @@ export async function listModels() {
         console.log(model);
         let modelNamToAdd = model.name;
         // split string on : and get the first element
-        modelNamToAdd = modelNamToAdd.split(":")[0];
+        //modelNamToAdd = modelNamToAdd.split(":")[0];
 
         listOfModelNames.push(modelNamToAdd);
     }
