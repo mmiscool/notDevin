@@ -1,1 +1,0 @@
-Sort A to z in a case insensitive way with the sorted list retaining its original case. 

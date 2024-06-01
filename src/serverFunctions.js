@@ -8,7 +8,7 @@ export function serverFunctionsCall(inputObject){
 
     const action = inputObject.action;
 
-    console.log(`Action: ${action}`);
+    if (debugMode)console.log(`Action: ${action}`);
 
     // Return the Promise directly
     return import(`./serverFunctions/${action}.js`)
@@ -19,7 +19,7 @@ export function serverFunctionsCall(inputObject){
         })
         .catch(error => {
             if (debugMode)console.error('Error:', error.message);
-            console.log('Error:', error);
+            if (debugMode)console.log('Error:', error);
             return { error: error.message };
         });
 }

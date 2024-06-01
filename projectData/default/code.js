@@ -290,14 +290,13 @@ function closeSurface(surface) {
 
 // Function: createNURBSCurve
 /**
- * Creates a NURBS (Non-uniform rational B-spline) curve with the given degree, control points, weights, and knots.
- *
- * @param {number} degree The degree of the polynomial used to define the curve.
- * @param {Array.<{x: number, y: number}>} controlPoints An array of control points that define the shape of the curve.
- * @param {Array.<number>} weights An array of weights associated with each control point.
- * @param {Array.<number>} knots An array of knot values that define the parameterization of the curve.
- *
- * @return {{weights: Array.<number>, knots: Array.<number>}} The created NURBS curve, represented as an object containing the updated weights and knots arrays.
+ * @name createNURBSCurve
+ * @function Creates a NURBS curve given the degree, control points, weights and knots.
+ * @param {number} degree - The degree of the curve.
+ * @param {Array.<{x: number, y: number}>} controlPoints - An array of 2D points that define the shape of the curve.
+ * @param {Array<number>} weights - An array of numbers representing the weights for each control point.
+ * @param {Array<number>} knots - An array of numbers representing the knot values for the curve.
+ * @returns {{weights: Array<number>, knots: Array<number>}} A object containing the weighted knots.
  */
 function createNURBSCurve(degree, controlPoints, weights, knots) {
     var n = controlPoints.length;
@@ -492,49 +491,35 @@ function curveDegreeElevation(curve, newDegree) {
 
 // Function: curveDerivativeAtParam
 /**
- * @param {Array} curve - An array containing the degree, control points, weights, and knots of a B-spline curve.
- * @param {Number} param - The parameter value at which to compute the derivative.
- * @param {Number} order - The order of the B-spline curve (i.e., its degree).
- * @return {Array} An array containing the derivatives of the B-spline curve at the given parameter value.
+ * Calculates the derivative of a curve at a specified parameter using De Boor's algorithm and binomial coefficients for approximation.
+ *
+ * @param {Object} curve - The input curve object containing control points, degree, and knot vector.
+ * @param {number} param - The parameter at which to evaluate the derivative.
+ * @param {number} order - The order of the derivative to be calculated (e.g., first-order derivative).
+ * @returns {Array<number>|null} Returns an array representing the derivative basis or null if curve is not valid.
+ * 
+ * Note:
+ * - The 'curve' parameter must be a non-null object with a 'degree' property and should have control points, knot vector.
+ * - The function uses deBoorAlgorithm to compute the basis functions for the input curve.
+ * - Binomial coefficient calculations are used in deriving the derivative of the curve based on De Boor's algorithm.
+ * - It is assumed that 'e', 'binom', and 'pow' are pre-defined utility functions available in this context.
  */
 function curveDerivativeAtParam(curve, param, order) {
-    var degree = curve[0];
-    var controlPoints = curve[1];
-    var weights = curve[2];
-    var knots = curve[3];
-
-    for (var i = 0; i < degree + 1; i++) {
-        var basisDerivativeU = [];
-        var basisDerivativeV = [];
-
-        for (var j = 0; j <= degree; j++) {
-            if (i == 0) {
-                basisDerivativeU.push(weights[j] * (knots[i] - param));
-                basisDerivativeV.push(weights[j] * (knots[degree + i] - param));
-            } else if (i == degree) {
-                basisDerivativeU.push(weights[j] * (param - knots[i - 1]));
-                basisDerivativeV.push(weights[j] * (param - knots[degree + i - 1]));
-            } else {
-                basisDerivativeU.push(weights[j] * ((knots[i] - param) / (knots[i] - knots[i - 1])));
-                basisDerivativeV.push(weights[j] * ((param - knots[degree + i - 1]) / (knots[degree + i] - knots[degree + i - 1]))));
-            }
+    if (typeof curve !== 'object' || !('degree' in curve)) return null;
+    
+    const basisFunctions = deBoorAlgorithm(curve.degree, curve.controlPoints, curve.knotVector, param);
+    
+    let derivativeBasis = [];
+    
+    for (let i = 0; i < order + 1; i++) {
+        let product = basisFunctions[i];
+        
+        for (let j = e(param), e; j >= 0; j /= 10) {
+            derivativeBasis.push((binom(j, i) * pow(x, j)) - ((binom(j-1, i) * pow(x, j-1))));
         }
-
-        var curveDerivative = [];
-
-        for (var k = 0; k < controlPoints.length; k++) {
-            var point = [0, 0];
-
-            for (var l = 0; l <= degree; l++) {
-                point[0] += basisDerivativeU[l] * controlPoints[k][0];
-                point[1] += basisDerivativeV[l] * controlPoints[k][1];
-            }
-
-            curveDerivative.push(point);
-        }
-
-        return curveDerivative;
     }
+    
+    return derivativeBasis[order];
 }
 
 
@@ -709,40 +694,29 @@ function curveSubdivision(curve, param) {
 
 
 // Function: curveTangentAtParam
-/**
- * Calculate the tangent of a curve at a given parameter value.
- *
- * @param {Curve} curve The curve to calculate the tangent for.
- * @param {number} param The parameter value to calculate the tangent at.
- * @returns {Object} An object representing the tangent vector (x, y, z).
- */
+[object Object]
 function curveTangentAtParam(curve, param) {
-    var controlPoints = curve.controlPoints;
-    var weights = curve.weights;
-    var knots = curve.knots;
     var degree = curve.degree;
+    var knots = curve.knots;
 
-    for (var i = 0; i < degree + 1; i++) {
-        var weight = weights[i];
-        var knot = knots[i];
-
-        if (knot <= param && param <= knot + (knots[degree] - knots[degree - 1]) / ((knots[degree] - knots[degree - 1]) * Math.pow((knots[degree] - knots[degree - 1]) / (knots[degree] - knots[degree - 2]), degree)) {
-            var tangent = new { x: 0, y: 0, z: 0 };
-
-            for (var j = 0; j < controlPoints.length; j++) {
-                if (weights[j] !== 0) {
-                    var weightProduct = weight * weights[j];
-                    var knotDiff = param - knot;
-                    var power = Math.pow(knotDiff / ((knots[degree] - knots[degree - 1]) / ((knots[degree] - knots[degree - 2]))), degree);
-                    tangent.x += controlPoints[j].x * weightProduct * power;
-                    tangent.y += controlPoints[j].y * weightProduct * power;
-                    tangent.z += controlPoints[j].z * weightProduct * power;
-                }
-            }
-
-            return tangent;
-        }
+    if (param < 0 || param >= knots.length - degree) {
+        throw new Error('Parameter is out of bounds');
     }
+
+    var tangent = { x: 0, y: 0, z: 0 };
+
+    for (var i = degree + 1; i < knots.length - 1; i++) {
+        if (knots[i] === param) {
+            break;
+        }
+
+        var weightProduct = curve.weights[i];
+        tangent.x += curve.controlPoints[i].x * weightProduct;
+        tangent.y += curve.controlPoints[i].y * weightProduct;
+        tangent.z += curve.controlPoints[i].z * weightProduct;
+    }
+
+    return deBoorAlgorithm(degree, curve.controlPoints, knots, param);
 }
 
 
@@ -1073,12 +1047,7 @@ function findCurveIntersections(curve1, curve2) {
     return result;
 }
 
-function isPointOnLine(point1, point2, curve) {
-    var param = deBoorAlgorithmSurface(curve.degreeU, curve.degreeV, curve.controlPoints, curve.knotsU, curve.knotsV, point1.x, point2.y);
-    if (isNaN(param)) return false;
-    var p = evaluateSurfaceAtParam(curve, param, 0);
-    return Math.abs(p.x - point1.x) < 0.00001 && Math.abs(p.y - point2.y) < 0.00001;
-}
+
 
 
 
@@ -1290,6 +1259,29 @@ function isCurveClosed(curve) {
         }
     }
     return true;
+}
+
+
+
+
+
+// Function: isPointOnLine
+/**
+ * Checks if a point is on the line defined by two points and a curve.
+ *
+ * @param {Object} point1 - The first point defining the line.
+ * @param {Object} point2 - The second point defining the line.
+ * @param {Object} curve - The curve defining the line.
+ * @returns {boolean} True if the point is on the line, false otherwise.
+ */
+function isPointOnLine(point1, point2, curve) {
+    var paramU = deBoorAlgorithmSurface(1, [curve], [], [], 0, 0);
+    var surfaceCoord = evaluateSurfaceAtParam(curve, paramU, 0);
+    if (Math.abs(point1.x - surfaceCoord[0]) < 0.0001 && Math.abs(point1.y - surfaceCoord[1]) < 0.0001 && Math.abs(point1.z - surfaceCoord[2]) < 0.0001) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 

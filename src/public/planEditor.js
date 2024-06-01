@@ -110,7 +110,7 @@ async function submitPrompt(doNotSend = false) {
         context: contextWindow
     });
 
-
+console.log(response);
     localStorage.lastTextPrompt = promptTextarea.value;
 
 

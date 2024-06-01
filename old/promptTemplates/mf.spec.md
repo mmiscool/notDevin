@@ -1,4 +1,0 @@
-## Function description:
-
-## Return value
-

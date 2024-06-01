@@ -1,7 +1,0 @@
-/**
- * Calculates the hypotenuse of a right-angled triangle given its length and width.
- * 
- * @param {number} length - The length of the triangle's side adjacent to the right angle.
- * @param {number} width - The width of the triangle's side adjacent to the right angle.
- * @returns {number} The hypotenuse, calculated using the Pythagorean theorem.
- */

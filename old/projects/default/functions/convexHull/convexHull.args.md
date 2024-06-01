@@ -1,1 +1,0 @@
-array of 2d points {x,y}

@@ -1,8 +1,0 @@
-/**
-* Creates a polygon object with specified points and computes its center point.
-* 
-* @param {Array} points - An array of objects representing the vertices of the polygon. Each vertex should have x and y properties (optional for the last point).
-* @returns {Object} A new Polygon instance, which contains an id derived from a timestamp, the original points, and its center point.
-* 
-* @throws {Error} If the input points array does not contain exactly three elements.
-*/

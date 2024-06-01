@@ -1,1 +1,0 @@
-function sumAB(A, B) { return A + B; }

@@ -1,8 +1,0 @@
-/**
- * Calculates the sum of two numbers `A` and `B`.
- *
- * @function sumAB
- * @param {number} A - The first number to be added.
- * @param {number} B - The second number to be added.
- * @returns {number} The sum of `A` and `B`.
- */

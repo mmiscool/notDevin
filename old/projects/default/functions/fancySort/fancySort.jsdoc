@@ -1,5 +1,0 @@
-/**
- * Sorts an array of elements in a case-insensitive manner using localeCompare for comparison.
- * @param {Array} arr - The input array to be sorted, where all elements are strings.
- * @returns {Array} - A new array with the same elements as 'arr', but sorted case-insensitively.
- */

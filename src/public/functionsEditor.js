@@ -1,5 +1,5 @@
 import { sendToApi } from "./APIajaxRequest.js";
-import { spinner_insert, generateForm, updateElementValues, updateSelectOptions} from './commonComponents.js';
+import { spinner_insert, generateForm, updateElementValues, updateSelectOptions } from './commonComponents.js';
 
 
 let formFields;
@@ -58,33 +58,89 @@ async function function_save() {
 
     console.log(response);
 
-    await function_read(saveObject.functionName);
-    await function_list();
 
+    await function_list();
+    await function_read(saveObject.functionName);
 }
 
 document.getElementById("listFunctionsButton").addEventListener("click", function_list);
 
 async function function_list() {
     const response = await sendToApi("functions/list", {});
-    // make a list of strings from the items in the response object _id
-    const functionNames = response.map(item => item._id);
-    updateSelectOptions("functionNameList", functionNames);
+    generateFunctionListTable(response);
 }
 
 
-document.getElementById("functionNameList").addEventListener("change", function () {
-    const functionName = document.getElementById("functionNameList").value;
 
-    function_read(functionName);
-});
+async function generateFunctionListTable(list) {
+    const table = document.getElementById("functionListTable");
+    table.innerHTML = "";
+
+    // create a header row
+    let headerRow = table.insertRow(-1);
+    let headerCell = headerRow.insertCell(-1);
+    headerCell.innerHTML = "Select";
+    headerCell = headerRow.insertCell(-1);
+    headerCell.innerHTML = "Function Name";
+    headerCell = headerRow.insertCell(-1);
+    headerCell.innerHTML = "Error";
+
+    // add header column for needsGeneration and lastGenerated fields
+    headerCell = headerRow.insertCell(-1);
+    headerCell.innerHTML = "Generated";
+
+
+
+
+    list.forEach(item => {
+        // create a row for each item in the list
+        let row = table.insertRow(-1);
+
+        let cell = row.insertCell(-1);
+
+
+
+        // make the first column be a checkbox that can be used to select the row
+        let checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = item._id;
+        cell.appendChild(checkbox);
+        cell = row.insertCell(-1);
+        // add an event listener to each cell except the for the select checkbox
+        cell.addEventListener("click", function () {
+            function_read(item._id);
+        });
+        cell.innerHTML = item._id;
+        cell = row.insertCell(-1);
+        // add an event listener to each cell except the for the select checkbox
+        cell.addEventListener("click", function () {
+            function_read(item._id);
+        });
+        cell.innerHTML = item.errorLogs == "" ? "" : "❌";
+
+        // add a column for needsGeneration and lastGenerated fields
+        cell = row.insertCell(-1);
+        cell.innerHTML = item.needsGeneration == "true" ? "❌" : "✅";
+
+
+
+    });
+
+}
+
+
+// document.getElementById("functionNameList").addEventListener("change", function () {
+//     const functionName = document.getElementById("functionNameList").value;
+
+//     function_read(functionName);
+// });
 
 
 
 
 async function function_read(functionName) {
     function_new();
-    const response = await sendToApi("functions/read", { _id: functionName});
+    const response = await sendToApi("functions/read", { _id: functionName });
     console.log("this is the record we got from the server", response);
     updateElementValues(response);
 }

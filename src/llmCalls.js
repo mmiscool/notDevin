@@ -2,21 +2,30 @@ import ollama from 'ollama';
 import { fileIOread } from './fileIO.js';
 
 async function invokeLLM(props) {
-  //console.log(`-----`);
-  //console.log(`[${props.model}]: ${props.content}`);
-  //console.log(`-----`);
+  console.log(`Running invokeLLM prompt...
+  ------------------------------------------------------------------------------------`);
   try {
-    console.log(`Running prompt...`);
     const response = await ollama.chat({
       model: props.model,
       messages: [{ role: props.role, content: props.content }],
+      stream: true,  // Enable streaming
       options: {
-        "keep_alive":'24h',
+        "keep_alive": '24h',
         "num_ctx": 100000,
       }
     });
-    //console.log(`${response.message.content}\n`);
-    return response.message.content;  // Return the response content
+
+    let completeResponse = '';
+
+    for await (const part of response) {
+      //console.log('Chunk received:', part.message.content);
+      process.stdout.write(part.message.content)
+      completeResponse += part.message.content;
+    }
+
+    console.log('Complete response:', completeResponse);
+    return { message: { content: completeResponse } };  // Return the complete response object
+
   } catch (error) {
     console.error(`Query failed!`);
     console.error(error);
@@ -24,18 +33,34 @@ async function invokeLLM(props) {
   }
 }
 
+
 export async function invokeLLMraw(props) {
   try {
-    console.log(`Running prompt...`);
-    const response = await ollama.generate(props);
-    //console.log(response);
-    return response;  // Return the response content
+    console.log(`Running invokeLLMraw prompt...
+    ------------------------------------------------------------------------------------`);
+    const response = await ollama.generate({ ...props, stream: true });  // Enable streaming
+    let completeResponse = '';
+
+    for await (const part of response) {
+      process.stdout.write(part.response);
+      completeResponse += part.response;
+      console.log('Part:', part);
+      if (part.done === true) {
+        response.response = completeResponse;
+        console.log('Complete response:', response);
+        return { ...response };
+
+      }
+    }
+
+    //console.log('Complete response:', completeResponse);
+    return await { ...response };  // Return the complete response object
+
   } catch (error) {
     console.error(`Query failed!`);
     console.error(error);
     return null;  // Return null in case of error
   }
-
 }
 
 

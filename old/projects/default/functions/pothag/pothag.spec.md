@@ -1,1 +1,0 @@
-make a function that calculates the length of the long side of a triangle given the length and width
