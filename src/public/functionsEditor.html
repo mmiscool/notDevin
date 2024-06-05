@@ -8,13 +8,18 @@
     <title>NotDevin</title>
 
     <link rel="stylesheet" href="./newStyle.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/2.4.4/webcomponents-bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs/loader.js"></script>
+
 </head>
 
 <body>
     <div class="container">
         <div class="toolBar">
-            <button id="listFunctionsButton">🗘</button><button id="generateAllFunctionsButton">Generate All
-                Functions</button>
+            <button id="listFunctionsButton">🗘</button>
+            
+            <button id="generateSelected">Generate Selected</button>
         </div>
         <div class="left">
             <button id="newFunctionButton">New Function</button>

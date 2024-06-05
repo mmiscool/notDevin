@@ -44,7 +44,7 @@ export async function invokeLLMraw(props) {
     for await (const part of response) {
       process.stdout.write(part.response);
       completeResponse += part.response;
-      console.log('Part:', part);
+      //console.log('Part:', part);
       if (part.done === true) {
         response.response = completeResponse;
         console.log('Complete response:', response);

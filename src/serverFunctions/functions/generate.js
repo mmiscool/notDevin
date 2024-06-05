@@ -5,13 +5,14 @@ import function_read from './read.js';
 import function_save from "./save.js";
 import { function_list_with_arguments } from "./list.js";
 
+const debugMode = false;
 
 
 export default async function function_generate(inputObject) {
     let myFunction = await function_read(inputObject);
     const functionName = myFunction._id;
 
-    //console.log("here is the function object", myFunction);
+    console.log("here is the function object", myFunction);
 
 
     myFunction.arguments = await addTextChunkLabel("function input arguments", myFunction.arguments);
@@ -42,7 +43,7 @@ export default async function function_generate(inputObject) {
 
 
 function addTextChunkLabel(label, textChunk = "") {
-    console.log("addTextChunkLabel", label, textChunk);
+    if (debugMode === true) console.log("addTextChunkLabel", label, textChunk);
     //label = label.trim();
     textChunk = textChunk.trim();
     if (textChunk === "") return "";
@@ -75,7 +76,7 @@ export async function executeCodeAsync(codeString) {
 async function cleanupMarkdownCodeBlock(codeBlock) {
     //remove the string "```javascript" from the beginning of the code block
     //remove the string "```" from the end of the code block
-    console.log("cleanupMarkdownCodeBlock", codeBlock);
+    if (debugMode === true) console.log("cleanupMarkdownCodeBlock", codeBlock);
     const newCodeBlock = await codeBlock.replace("```javascript", "").replace("```", "");
     return newCodeBlock;
 }

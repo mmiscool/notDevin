@@ -45,8 +45,7 @@ button {
     white-space: nowrap;
 }
 
-textarea,
-input {
+textarea {
 
     width: calc(100% - 3px);
     height: auto;

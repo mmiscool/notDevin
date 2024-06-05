@@ -1,6 +1,8 @@
 import { fileIOwrite } from '../../fileIO.js';
-import  function_read from './read.js';
-import  function_list  from './list.js';
+import function_read from './read.js';
+import function_list from './list.js';
+
+const debugMode = false;
 
 export default async function compile_build(inputObject) {
     const projectName = inputObject.projectName;
@@ -11,12 +13,13 @@ export default async function compile_build(inputObject) {
     // get the function list for the current project and itterate over it
     const functionList = await function_list(inputObject);
 
-    console.log("Function list", functionList)
+
+    if (debugMode) console.log("Function list", functionList)
     for (const functionItem of functionList) {
         codeFileText += `// Function: ${functionItem._id}\n`;
         codeFileText += `${functionItem.jsdoc}\n`;
         codeFileText += `${functionItem.code}\n\n\n\n\n\n`;
-    }    
+    }
 
 
 
@@ -24,6 +27,6 @@ export default async function compile_build(inputObject) {
     const codeFilePath = `../projectData/${projectName}/code.js`;
     fileIOwrite(codeFilePath, codeFileText);
     console.log(`File written: ${codeFilePath}`);
-    console.log(codeFileText);
+    //console.log(codeFileText);
     return codeFileText;
 }

@@ -18,7 +18,7 @@ export default function schema() {
         arguments: {
             type: "string",
             userEditable: true,
-            widget: "textarea",
+            widget: "input",
             label: "Arguments",
             description: "The arguments of the function."
         },

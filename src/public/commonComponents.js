@@ -60,7 +60,14 @@ export function generateForm(schema, containerId) {
         if (details.widget === 'input') {
             input = document.createElement('input');
             input.type = 'text';
-        } else if (details.widget === 'textarea') {
+        } else if (details.widget === 'monaco-editor') {
+            input = document.createElement('monaco-editor');
+            input.setAttribute('language', 'javascript');
+            input.setAttribute('value', '');
+            input.style.height = '500px';
+        }
+
+        else if (details.widget === 'textarea') {
             input = document.createElement('textarea');
 
             // make text area always the the height required to show all the text inside it. 
@@ -106,7 +113,7 @@ export function updateElementValues(data) {
         if (element) {
             element.value = value;
             // manually trigger the change event
-            resizeTextarea.call(element);
+            if (element.tagName === 'TEXTAREA') resizeTextarea.call(element);
         }
     });
 }
@@ -140,3 +147,76 @@ export function updateSelectOptions(selectID, options) {
         select.appendChild(option);
     });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class MonacoEditor extends HTMLElement {
+    constructor() {
+        super();
+        this.editor = null;
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+            <style>
+                #container {
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+                }
+            </style>
+            <div id="container"></div>
+        `;
+    }
+
+    connectedCallback() {
+        this.loadMonacoEditor();
+    }
+
+    loadMonacoEditor() {
+        const container = this.shadowRoot.getElementById('container');
+        const value = this.getAttribute('value') || '';
+
+        require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs' }});
+        require(['vs/editor/editor.main'], () => {
+            this.editor = monaco.editor.create(container, {
+                value: value,
+                language: 'javascript',
+                automaticLayout: true
+            });
+
+            this.editor.onDidChangeModelContent(() => {
+                this.setAttribute('value', this.editor.getValue());
+            });
+        });
+    }
+
+    static get observedAttributes() {
+        return ['value'];
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === 'value' && this.editor && oldValue !== newValue) {
+            this.editor.setValue(newValue);
+        }
+    }
+
+    get value() {
+        return this.getAttribute('value');
+    }
+
+    set value(newValue) {
+        this.setAttribute('value', newValue);
+    }
+}
+
+customElements.define('monaco-editor', MonacoEditor);

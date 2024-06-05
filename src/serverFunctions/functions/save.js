@@ -3,6 +3,7 @@ import function_read from "./read.js";
 import * as esprima from 'esprima';
 import * as escodegen from 'escodegen';
 import * as estraverse from 'estraverse';
+import compile_build from './build.js';
 
 const debugMode = false;
 
@@ -27,14 +28,18 @@ export default async function function_save(inputObject) {
 
     // set needsGeneration to true if the errorLogs are not empty
     inputObject.needsGeneration = (inputObject.errorLogs == "" ? "false" : "true");
+    if (inputObject.errorLogs != "") inputObject.needsGeneration = "true";
+    if (inputObject.code == "") inputObject.needsGeneration = "true";
 
     //console.log("needsGeneration", needsGeneration, errorLogs);
 
     const missingFunctions = await findUndefinedFunctions(inputObject.code);
-    console.log("misssing",missingFunctions);
+    console.log("misssing", missingFunctions);
 
 
     await db.db.writeDocument(inputObject);
+
+    compile_build(inputObject);
 
     return await function_read(inputObject);
 
@@ -44,6 +49,9 @@ export default async function function_save(inputObject) {
 
 
 async function extractJSstructure(code) {
+    if (debugMode  === true) console.log("extractJSstructure", code);
+    if (code == undefined) return "";
+    if (code == "") return "";
 
     try {
         // Parsing the JavaScript code to an AST
@@ -66,7 +74,7 @@ async function extractJSstructure(code) {
 
         return "";
     } catch (error) {
-        console.error(error);
+        console.log(error);
         return JSON.stringify(error);
     }
 }
@@ -123,18 +131,28 @@ function getFunctionDeclarations(ast) {
 }
 
 async function findUndefinedFunctions(code) {
-    const ast = await Promise.resolve(esprima.parseScript(code, { tolerant: true, range: true }));
-    const functionCalls = await getFunctionCalls(ast);
-    const functionDeclarations = await getFunctionDeclarations(ast);
-    const predefinedFunctions = new Set(Object.getOwnPropertyNames(Math).concat(Object.getOwnPropertyNames(Array.prototype)).concat(Object.getOwnPropertyNames(String.prototype)).concat(Object.getOwnPropertyNames(Object.prototype)));
 
-    const missingFunctions =await functionCalls
-        .filter(call => !functionDeclarations.has(call.callee.name) && !predefinedFunctions.has(call.callee.name))
-        .map(call => ({
-            functionName: call.callee.name,
-            functionArguments: call.arguments.map(arg => arg.name || JSON.stringify(arg.value)).join(', ')
-        }));
+    if (code == undefined) return [];
+    if (code == "") return [];
+    try {
+        const ast = await Promise.resolve(esprima.parseScript(code, { tolerant: true, range: true }));
+        const functionCalls = await getFunctionCalls(ast);
+        const functionDeclarations = await getFunctionDeclarations(ast);
+        const predefinedFunctions = new Set(Object.getOwnPropertyNames(Math).concat(Object.getOwnPropertyNames(Array.prototype)).concat(Object.getOwnPropertyNames(String.prototype)).concat(Object.getOwnPropertyNames(Object.prototype)));
 
-    return missingFunctions;
+        const missingFunctions = await functionCalls
+            .filter(call => !functionDeclarations.has(call.callee.name) && !predefinedFunctions.has(call.callee.name))
+            .map(call => ({
+                functionName: call.callee.name,
+                functionArguments: call.arguments.map(arg => arg.name || JSON.stringify(arg.value)).join(', ')
+            }));
+
+        return missingFunctions;
+    } catch (error) {
+        console.log("findUndefinedFunctions", error);
+        return [];
+    }
+
+
 }
 

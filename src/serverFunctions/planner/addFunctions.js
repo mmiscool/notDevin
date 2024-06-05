@@ -7,6 +7,7 @@ console.log("addFunctions.js");
 
 export default async function addFunctions(inputObject) {
     //loop through the array of functions and save them
+    console.log("addFunctions.js inputObject", inputObject);
     for (const functionToMake of inputObject.functionsToMake) {
         //Remove all* characters from the functionToMake._id and trim any white space
         functionToMake._id = functionToMake._id.replace(/[*]/g, "").trim();
@@ -14,6 +15,7 @@ export default async function addFunctions(inputObject) {
         functionToMake._id = functionToMake._id.replace(/`/g, "").trim();
 
         functionToMake.needsGeneration = "true";
+        console.log("addFunctions.js functionToMake", functionToMake);
         await function_save(functionToMake);
     }
 

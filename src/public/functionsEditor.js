@@ -7,15 +7,25 @@ let formFields;
 async function setupForm() {
     formFields = await sendToApi("functions/schema", {});
     //alert(`formFields: ${JSON.stringify(formFields)}`);
-    generateForm(formFields, "functionForm");
+    await generateForm(formFields, "functionForm");
     await function_list();
+
+    
 
 }
 setupForm();
 
 
 
-const generateAllFunctionsButton = document.getElementById("generateAllFunctionsButton");
+document.getElementById("generateSelected").addEventListener("click", function_generateSelected);
+
+async function function_generateSelected() {
+    const checkboxes = document.querySelectorAll("#functionListTable input[type=checkbox]");
+    const selectedIds = Array.from(checkboxes).filter(checkbox => checkbox.checked).map(checkbox => checkbox.value);
+    console.log("selectedIds", selectedIds);
+
+    sendToApi("functions/generateList", { list: selectedIds });
+}
 
 
 
@@ -60,7 +70,8 @@ async function function_save() {
 
 
     await function_list();
-    await function_read(saveObject.functionName);
+    await function_read(saveObject._id);
+    //alert(`Saved function ${saveObject.functionName}`);
 }
 
 document.getElementById("listFunctionsButton").addEventListener("click", function_list);
@@ -79,7 +90,15 @@ async function generateFunctionListTable(list) {
     // create a header row
     let headerRow = table.insertRow(-1);
     let headerCell = headerRow.insertCell(-1);
-    headerCell.innerHTML = "Select";
+    // make a checkbox that will check all the checkboxes in the table
+    let checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.addEventListener("click", function () {
+        const checkboxes = document.querySelectorAll("#functionListTable input[type=checkbox]");
+        checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+    });
+    headerCell.appendChild(checkbox);
+    
     headerCell = headerRow.insertCell(-1);
     headerCell.innerHTML = "Function Name";
     headerCell = headerRow.insertCell(-1);
@@ -142,6 +161,7 @@ async function function_read(functionName) {
     function_new();
     const response = await sendToApi("functions/read", { _id: functionName });
     console.log("this is the record we got from the server", response);
+
     updateElementValues(response);
 }
 
@@ -155,9 +175,3 @@ async function function_generate() {
     console.log(response);
     await function_read(id);
 }
-
-
-
-
-
-
