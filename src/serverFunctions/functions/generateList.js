@@ -5,7 +5,7 @@ const debugMode = false;
 
 export default async function function_generate_fromList(inputObject) {
 
-    console.log("function_generate_fromList", inputObject.list);
+    //console.log("function_generate_fromList", inputObject.list);
 
     let list = inputObject.list;
     for (let i = 0; i < list.length; i++) {

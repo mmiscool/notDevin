@@ -1,14 +1,10 @@
 // Function: Curve
-/**
- * @name Curve
- * @param {Array} points - An array of points defining the curve.
+ /**
+ * Represents a curve with an array of points.
  * @constructor
- *
- * @description Creates a new curve with the given points.
- *
- * @property {Array} points - The points that define the curve.
- * @method getPoints() - Returns the current points of the curve.
- * @method setPoint(i, point) - Sets a point at the specified index in the curve.
+ * @param {Array} [points] - An optional array of points to initialize the curve.
+ */
+
 function Curve(points) {
   this.points = points || [];
   this.getPoints = function() { return this.points; };
@@ -24,11 +20,13 @@ function Curve(points) {
 
 
 // Function: Edge
-/**
- * Creates a new edge object representing the line segment between two vertices.
- * 
- * @param {Array.<number>} vertex1 - The coordinates of the first vertex (x, y, z).
- * @param {Array.<number>} vertex2 - The coordinates of the second vertex (x, y, z).
+ /**
+ * Represents an edge in a graph or geometric structure connecting two vertices.
+ * @constructor
+ * @param {number[]} vertex1 - The coordinates of the first vertex as an array [x, y, z].
+ * @param {number[]} vertex2 - The coordinates of the second vertex as an array [x, y, z].
+ * @property {Object} vertexA - The first vertex with its coordinates.
+ * @property {Object} vertexB - The second vertex with its coordinates.
  */
 function Edge(vertex1, vertex2) {
   this.vertexA = {x: vertex1[0], y: vertex1[1], z: vertex1[2]};
@@ -40,21 +38,21 @@ function Edge(vertex1, vertex2) {
 
 
 // Function: Face
-/**
- * @param {Object} surface - 
- * @param {Array} loops - 
+ /**
+ * Constructs a new face by finding intersections between edges of the surface and given loops.
+ * @param {Object} surface - The surface object containing edges and shells.
+ * @param {Array<{vertex1: Object, vertex2: Object}>} loops - An array of loop objects with vertices.
  */
+
 function Face(surface, loops) {
   const vertices = [];
   for (let i = 0; i < loops.length; i++) {
     const edge = {v1: loops[i].vertex1, v2: loops[i].vertex2};
     for (const edge2 of surface.edges) {
-      if (edge.v1.x === edge2.v1.x && edge.v1.y === edge2.v1.y && edge.v1.z === edge2.v1.z &&
-          edge.v2.x === edge2.v2.x && edge.v2.y === edge2.v2.y && edge.v2.z === edge2.v2.z) {
-        const intersection = {x: (edge.v1.x + edge.v2.x) / 2, y: (edge.v1.y + edge.v2.y) / 2, z: (edge.v1.z + edge.v2.z) / 2};
-        vertices.push(intersection);
-      } else if (edge.v1.x === edge2.v2.x && edge.v1.y === edge2.v2.y && edge.v1.z === edge2.v2.z &&
-                 edge.v2.x === edge2.v1.x && edge.v2.y === edge2.v1.y && edge.v2.z === edge2.v1.z) {
+      if ((edge.v1.x === edge2.v1.x && edge.v1.y === edge2.v1.y && edge.v1.z === edge2.v1.z &&
+           edge.v2.x === edge2.v2.x && edge.v2.y === edge2.v2.y && edge.v2.z === edge2.v2.z) ||
+          (edge.v1.x === edge2.v2.x && edge.v1.y === edge2.v2.y && edge.v1.z === edge2.v2.z &&
+           edge.v2.x === edge2.v1.x && edge.v2.y === edge2.v1.y && edge.v2.z === edge2.v1.z)) {
         const intersection = {x: (edge.v1.x + edge.v2.x) / 2, y: (edge.v1.y + edge.v2.y) / 2, z: (edge.v1.z + edge.v2.z) / 2};
         vertices.push(intersection);
       }
@@ -68,10 +66,10 @@ function Face(surface, loops) {
 
 
 // Function: Loop
-/**
- * @param {Array.<{x: number, y: number}>} edges 
- * @return {Array.<[Edge1: {x: number, y: number}, Edge2: {x: number, y: number}]>}
- * Finds all non-intersecting edges in the given array and returns them.
+ /**
+ * Creates a loop from an array of edges by checking for intersections and ensuring each edge is unique in the loop.
+ * @param {Array<[number, number]>} edges - An array of edges represented as pairs of coordinates.
+ * @returns {Array<[[number, number], [number, number]]>} An array of unique edge pairs forming a loop.
  */
 function Loop(edges){let result=[];for(let i=0;i<edges.length;i++){const currentEdge=edges[i];const nextEdge=edges[(i+1)%edges.length];if(!findIntersection(currentEdge,nextEdge)){result.push([currentEdge,nextEdge]);}else{console.error(`Intersection detected between edge ${i} and edge ${(i+1)%edges.length}. Loop creation interrupted.`);break;}}return result;}
 
@@ -80,10 +78,14 @@ function Loop(edges){let result=[];for(let i=0;i<edges.length;i++){const current
 
 
 // Function: Matrix
-/**
- * @name Matrix
- * @param {Array} elements - The input matrix elements.
- * @description Creates a new matrix based on the given elements and defines a method for matrix multiplication.
+ /**
+ * Represents a matrix with elements provided during construction.
+ * @constructor
+ * @param {Array<Array<number>>} elements - The elements of the matrix.
+ *
+ * @method times
+ * @param {Matrix} other - The matrix to multiply with.
+ * @returns {Matrix} A new Matrix instance representing the product of this and the other matrix.
  */
 function Matrix(elements) {
   this.elements = elements;
@@ -108,14 +110,16 @@ function Matrix(elements) {
 
 
 // Function: Point
-/**
- * @param {number} x - The x-coordinate of the point.
- * @param {number} y - The y-coordinate of the point.
- * @param {number} z - The z-coordinate of the point.
- * @returns {{x: number, y: number, z: number}} - A new Point object with the given coordinates.
+ /**
+ * Represents a point in three-dimensional space with x, y, and z coordinates.
+ * @constructor
+ * @param {number} x - The x coordinate of the point.
+ * @param {number} y - The y coordinate of the point.
+ * @param {number} z - The z coordinate of the point.
+ * @returns {Object} An object with properties x, y, and z representing the coordinates of the point.
  */
 function Point(x, y, z) {
-  return {x, y, z};
+  return { x, y, z };
 }
 
 
@@ -123,33 +127,38 @@ function Point(x, y, z) {
 
 
 // Function: Shell
-/**
- * @class Shell
- *
- * @param {Array} faces - The initial faces of the shell.
- *
- * @description Represents a shell with multiple faces.
+ /**
+ * Represents a shell containing multiple faces.
+ * @constructor
+ * @param {Array<Object>} faces - The initial faces to be included in the shell.
  */
+function Shell(faces) {
+  this._faces = Array.isArray(faces) ? faces : [faces];
+}
+
 /**
- * @member {Array} getFaces()
- *
- * @returns {Array} The faces of the shell.
- *
- * @description Gets the faces of the shell.
+ * Retrieves the array of faces contained within the shell.
+ * @returns {Array<Object>} - The array of faces.
  */
+Shell.prototype.getFaces = function() {
+  return this._faces;
+};
+
 /**
- * @member {void} setFaces(newFaces)
- *
- * @param {Array|Object} newFaces - New faces to set for the shell.
- *
- * @description Sets the faces of the shell.
+ * Sets a new array of faces for the shell.
+ * @param {Array<Object>} newFaces - The new array of faces to be set.
  */
+Shell.prototype.setFaces = function(newFaces) {
+  this._faces = newFaces instanceof Array ? newFaces : [newFaces];
+};
+
 /**
- * @member {Shell} clone()
- *
- * @returns {Shell} A cloned copy of this shell.
- *
- * @description Creates a deep copy of this shell.
+ * Creates a clone of the shell, including all its faces.
+ * @returns {Shell} - A new Shell object with the same faces as the original.
+ */
+Shell.prototype.clone = Shell.prototype.cloneCurve = function() {
+  return new Shell(this._faces);
+};
 function Shell(faces) {
   this._faces = Array.isArray(faces) ? faces : [faces];
 }
@@ -171,17 +180,18 @@ Shell.prototype.clone = Shell.prototype.cloneCurve = function() {
 
 
 // Function: Solid
-/**
- * @param {array} Shells - array of shell objects
- * @returns {number} the volume of the solid formed by stacking the shells
+ /**
+ * Calculates the volume of a solid object represented by an array of shells.
+ * @param {Array} Shells - An array of shell objects, each with methods to calculate its area and normal vector.
+ * @returns {number} The calculated volume of the solid.
  */
 function Solid(Shells) {
-    let volume = 0;
-    for (let i = 0; i < Shells.length; i++) {
-        const shell = Shells[i];
-        volume += shell.area() * Math.abs(shell.normal().dot(new Point(0, 0, 1))));
-    }
-    return volume;
+  let volume = 0;
+  for (let i = 0; i < Shells.length; i++) {
+      const shell = Shells[i];
+      volume += shell.area() * Math.abs(shell.normal().dot(new Point(0, 0, 1)));
+  }
+  return volume;
 }
 
 
@@ -189,18 +199,28 @@ function Solid(Shells) {
 
 
 // Function: Surface
-/**
- * @class Surface
- * Represents a surface defined by control points.
- *
- * @param {Array} controlPoints - The control points that define the surface.
+ /**
+ * Represents a surface defined by an array of control points.
+ * @constructor
+ * @param {Array<{x: number, y: number, z: number}>} controlPoints - The array of control points defining the surface.
  */
+
+function Surface(controlPoints) {
+    this.controlPoints = controlPoints;
+}
+
 /**
- * @method getCurve
- * Returns the curve of the surface defined by its control points.
- *
- * @return {Array} An array of objects representing the curve of the surface.
+ * Generates a curve based on the control points of the surface.
+ * @returns {Array<{x: number, y: number, z: number}>} An array of objects representing the curve segments between consecutive control points.
  */
+Surface.prototype.getCurve = function() {
+    let curve = [];
+    for (let i = 0; i < this.controlPoints.length - 1; i++) {
+        curve.push({x: this.controlPoints[i].x, y: this.controlPoints[i].y, z: this.controlPoints[i].z});
+        curve.push({x: this.controlPoints[i].x, y: this.controlPoints[i].y, z: this.controlPoints[i + 1].z});
+    }
+    return curve;
+};
 function Surface(controlPoints) {
     this.controlPoints = controlPoints;
 }
@@ -219,38 +239,48 @@ Surface.prototype.getCurve = function() {
 
 
 // Function: Vector
-/**
- * @name Vector
+ /**
+ * Represents a three-dimensional vector with x, y, and z components.
  * @constructor
- * @description Creates a new vector with the specified x, y, and z components.
- * @param {number} x - The x component of the vector.
- * @param {number} y - The y component of the vector.
- * @param {number} z - The z component of the vector.
- */
-
-/**
- * @name Vector.prototype.add
- * @description Adds two vectors together and returns the result.
- * @param {Vector} vector2 - The second vector to add.
- * @returns {Vector}
- */
-
-/**
- * @name Vector.prototype.subtract
- * @description Subtracts one vector from another and returns the result.
- * @param {Vector} vector2 - The second vector to subtract.
- * @returns {Vector}
+ * @param {number} x - The x coordinate of the vector.
+ * @param {number} y - The y coordinate of the vector.
+ * @param {number} z - The z coordinate of the vector.
  */
 function Vector(x, y, z) {
-    return {x, y, z};
+    this.x = x;
+    this.y = y;
+    this.z = z;
+}
+
+/**
+ * Adds two vectors and returns a new vector as the result.
+ * @param {Vector} vector2 - The vector to add to the current vector.
+ * @returns {Vector} A new Vector object representing the sum of the two vectors.
+ */
+Vector.prototype.add = function(vector2) {
+    return new Vector(this.x + vector2.x, this.y + vector2.y, this.z + vector2.z);
+};
+
+/**
+ * Subtracts another vector from the current vector and returns a new vector as the result.
+ * @param {Vector} vector2 - The vector to subtract from the current vector.
+ * @returns {Vector} A new Vector object representing the difference of the two vectors.
+ */
+Vector.prototype.subtract = function(vector2) {
+    return new Vector(this.x - vector2.x, this.y - vector2.y, this.z - vector2.z);
+};
+function Vector(x, y, z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
 }
 
 Vector.prototype.add = function(vector2) {
-    return {x: this.x + vector2.x, y: this.y + vector2.y, z: this.z + vector2.z};
+    return new Vector(this.x + vector2.x, this.y + vector2.y, this.z + vector2.z);
 };
 
 Vector.prototype.subtract = function(vector2) {
-    return {x: this.x - vector2.x, y: this.y - vector2.y, z: this.z - vector2.z};
+    return new Vector(this.x - vector2.x, this.y - vector2.y, this.z - vector2.z);
 };
 
 
@@ -258,11 +288,13 @@ Vector.prototype.subtract = function(vector2) {
 
 
 // Function: Vertex
-/**
+ /**
+ * Represents a vertex in three-dimensional space with coordinates (x, y, z).
  * @constructor
- * Creates a new Vertex object from the given point.
- *
- * @param {Point} point - The point coordinates to initialize this vertex with.
+ * @param {Object} point - The point object containing the x, y, and z coordinates.
+ * @param {number} point.x - The x coordinate of the vertex.
+ * @param {number} point.y - The y coordinate of the vertex.
+ * @param {number} point.z - The z coordinate of the vertex.
  */
 function Vertex(point) {
   this.x = point.x;
@@ -275,11 +307,19 @@ function Vertex(point) {
 
 
 // Function: addEdge
-/**
- * Adds an edge to a solid.
- *
- * @param {Object} solid - The solid to add the edge to.
- * @param {Object} edge - The edge to be added.
+ /**
+ * Adds an edge to a solid by creating new vertices and adding them to the solid's vertex list.
+ * @param {Object} solid - The solid object to which the edge will be added.
+ * @param {Object} edge - The edge object containing vertex information.
+ * @param {Object} edge.vertex1 - The first vertex of the edge.
+ * @param {number} edge.vertex1.x - The x-coordinate of the first vertex.
+ * @param {number} edge.vertex1.y - The y-coordinate of the first vertex.
+ * @param {number} edge.vertex1.z - The z-coordinate of the first vertex.
+ * @param {Object} edge.vertex2 - The second vertex of the edge.
+ * @param {number} edge.vertex2.x - The x-coordinate of the second vertex.
+ * @param {number} edge.vertex2.y - The y-coordinate of the second vertex.
+ * @param {number} edge.vertex2.z - The z-coordinate of the second vertex.
+ * @param {Array} solid.vertices - The array of vertices in the solid to which new vertices will be added.
  */
 function addEdge(solid, edge) {
   let newVertex1 = {x: edge.vertex1.x, y: edge.vertex1.y, z: edge.vertex1.z};
@@ -294,13 +334,15 @@ function addEdge(solid, edge) {
 
 
 // Function: addFace
-/**
- * @param {Object} shell - The shell object.
- * @param {Object} face - The face object to be added.
- * @returns {Object} A new shell object with the given face added.
+ /**
+ * Adds a face to the shell's faces array and returns the modified shell object.
+ * @param {Object} shell - The shell object which contains the faces array.
+ * @param {string} face - The face string to be added to the faces array.
+ * @returns {Object} - The updated shell object with the new face added.
  */
 function addFace(shell, face) {
-  return {x:shell.x, y:shell.y, z:shell.z, faces:[...shell.faces,face]};
+  shell.faces = [...shell.faces, face];
+  return shell;
 }
 
 
@@ -308,10 +350,13 @@ function addFace(shell, face) {
 
 
 // Function: addLoop
-/**
- * @param {Object} face - The object to add the loop to.
- * @param {*} loop - The loop to be added.
- * Adds a new loop to the given 'face' object, if it doesn't already have a 'loops' property or if that property is not an array. If necessary, initializes the 'loops' property with an empty array and then pushes the new loop onto it.
+ /**
+ * Adds a loop to the given face object.
+ * If the face does not have a 'loops' property or it is not an array, initializes it as an empty array.
+ * Then pushes the provided loop into the 'loops' array of the face.
+ * @param {Object} face - The face object to which the loop will be added.
+ * @param {Array} loop - The loop to add to the face.
+ */
 function addLoop(face, loop) {
   if (!("loops" in face) || !Array.isArray(face.loops)) face.loops = [];
   face.loops.push(loop);
@@ -322,13 +367,14 @@ function addLoop(face, loop) {
 
 
 // Function: addShell
-/**
- * @param {Object} solid - input solid object
- * @param {Object} shell - input shell object
- * @returns {Object} newSolid - the resulting solid object with added shell
+ /**
+ * Adds a shell to the given solid object.
+ * @param {Object} solid - The original solid object which contains at least properties x, y, z and shells.
+ * @param {Object} shell - The shell object to be added to the solid's shells array.
+ * @returns {Object} newSolid - A new solid object with the additional shell in its shells array.
  */
 function addShell(solid, shell) {
-    var newSolid = {x: solid.x, y: solid.y, z: solid.z, shells: [solid.shells].concat([shell])};
+    var newSolid = {x: solid.x, y: solid.y, z: solid.z, shells: [...solid.shells, shell]};
     return newSolid;
 }
 
@@ -337,10 +383,11 @@ function addShell(solid, shell) {
 
 
 // Function: addVectors
-/**
- * @param {Object} v1 - The first vector.
- * @param {Object} v2 - The second vector.
- * @returns {Object} - The sum of the two vectors.
+ /**
+ * Adds two vectors component-wise and returns the result as a new vector.
+ * @param {Object} v1 - The first vector with properties x, y, and z.
+ * @param {Object} v2 - The second vector with properties x, y, and z.
+ * @returns {Object} A new vector that is the sum of v1 and v2.
  */
 function addVectors(v1, v2) {
     return {x: v1.x + v2.x, y: v1.y + v2.y, z: v1.z + v2.z};
@@ -351,14 +398,18 @@ function addVectors(v1, v2) {
 
 
 // Function: addVertex
-/**
- * @param {Object} solid - The solid object to add the vertex to.
- * @param {Array|Number} vertex - The vertex to be added, can be either an array or a single number representing a 3D point (x,y,z).
- * Adds a new vertex to the specified solid's shell.
+ /**
+ * Adds a vertex to the last shell in the given solid object.
+ * @param {Object} solid - The solid object containing shells and vertices.
+ * @param {Array} vertex - The vertex array to be added to the last shell's faces.
+ */
 function addVertex(solid, vertex) {
-    solid.shell.push(new shell());
-    var lastFace = solid.shell[solid.shell.length-1].faces[solid.shell[solid.shell.length-1].faces.length-1];
-    lastFace.vertices.push(vertex);
+    solid.shell.push({});
+    var lastShell = solid.shell[solid.shell.length - 1];
+    if (!lastShell.faces) {
+        lastShell.faces = [];
+    }
+    lastShell.faces.push({ vertices: [vertex] });
 }
 
 
@@ -366,9 +417,10 @@ function addVertex(solid, vertex) {
 
 
 // Function: cloneCurve
-/**
- * @param {Object} curve - The curve to be cloned.
- * @returns {Object} A new curve with the same points as the input curve.
+ /**
+ * Clones a curve by creating a deep copy of its points.
+ * @param {Object} curve - The original curve object containing an array of point objects with x, y, and z properties.
+ * @returns {Object} - Returns a new object containing the cloned points array.
  */
 function cloneCurve(curve) {
     const clonedPoints = curve.points.map(point => ({ x: point.x, y: point.y, z: point.z }));
@@ -380,9 +432,10 @@ function cloneCurve(curve) {
 
 
 // Function: cloneMatrix
-/**
- * @param {Array[]} matrix The input matrix to be cloned.
- * @returns {{x: Array[], y: Array[], z: Array[]}} The cloned matrix with the same shape as the input.
+ /**
+ * Creates a deep clone of the given matrix.
+ * @param {Array<Array<number>>} matrix - The input matrix to be cloned.
+ * @returns {{x: Array<Array<number>>, y: Array<Array<number>>, z: Array<Array<number>}} - A new object containing three copies of the original matrix.
  */
 function cloneMatrix(matrix) {
     var result = [];
@@ -400,9 +453,13 @@ function cloneMatrix(matrix) {
 
 
 // Function: clonePoint
-/**
- * @param {Object} point - The point to clone.
- * @returns {Object} A new point with the same x, y, and z values as the input point.
+ /**
+ * Clones a point object by creating a new object with the same x, y, and z properties as the original.
+ * @param {Object} point - The point object to be cloned.
+ * @param {number} point.x - The x-coordinate of the point.
+ * @param {number} point.y - The y-coordinate of the point.
+ * @param {number} point.z - The z-coordinate of the point (optional).
+ * @returns {Object} A new object with the same properties as the original point.
  */
 function clonePoint(point) {
   return {x: point.x, y: point.y, z: point.z};
@@ -413,46 +470,22 @@ function clonePoint(point) {
 
 
 // Function: cloneSolid
-/**
- * Creates a deep clone of the given solid object, including all its shells and faces.
- * @param {Solid} solid The solid object to be cloned.
- * @return {Solid} A new solid object that is a deep copy of the original.
+ /**
+ * Clones the given solid by creating a deep copy of its shells and their associated faces, loops, edges, and vertices.
+ * @param {Solid} solid - The solid to be cloned.
+ * @returns {Solid} A new Solid instance with cloned shells and their contents.
  */
 function cloneSolid(solid) {
-    const shells = [];
-    for (const shell of solid.shells) {
-        const clonedShell = {};
-        for (const face of shell.faces) {
-            const clonedFace = new Face(face.controlPoints, []);
-            for (const loop of face.loops) {
-                let cloneLoop;
-                if (!loop.edges.length) {
-                    cloneLoop = new Loop([], []);
-                } else {
-                    const clonedEdge = new Edge(loop.edges[0]);
-                    let cloneEdges = [clonedEdge];
-                    for (let i = 1; i < loop.edges.length; i++) {
-                        const edge = loop.edges[i];
-                        cloneEdges.push(new Edge(edge));
-                    }
-                    cloneLoop = new Loop([], cloneEdges);
-                }
-                clonedFace.loops.push(cloneLoop);
-            }
-            clonedShell.faces.push(clonedFace);
-        }
-        for (let i = 0; i < shells.length; i++) {
-            const shell = solid.shells[i];
-            const clonedShellPart = {};
-            clonedShellPart.faces = [];
-            for (const face of shell.faces) {
-                clonedShellPart.faces.push(new Face(face));
-            }
-            shells.push(clonedShellPart);
-        }
-        const clonedSolid = new Solid([], shells);
-        return clonedSolid;
-    }
+    const shells = solid.shells.map(shell => ({
+        faces: shell.faces.map(face => ({
+            controlPoints: face.controlPoints,
+            loops: face.loops.map(loop => ({
+                edges: loop.edges.length ? [new Edge(loop.edges[0])] : [],
+                vertices: []
+            }))
+        }))
+    }));
+    return new Solid([], shells);
 }
 
 
@@ -460,9 +493,10 @@ function cloneSolid(solid) {
 
 
 // Function: cloneSurface
-/**
- * @param {Array.<Array.<{x: number, y: number, z: number}>}> surface 
- * @returns {{data: Array.<Array.<{x: number, y: number, z: number}>>}}
+ /**
+ * Clones a surface array and its nested points, preserving the x, y, z coordinates of each point.
+ * @param {Array<Array<{x: number, y: number, z: number}>>} surface - The surface to be cloned.
+ * @returns {{data: Array<Array<{x: number, y: number, z: number}>}} - A clone of the input surface with nested points.
  */
 function cloneSurface(surface) {
   let result = [];
@@ -481,9 +515,13 @@ function cloneSurface(surface) {
 
 
 // Function: cloneVector
-/**
- * @param {Object} vector - The original vector object.
- * @returns {Object} - A cloned copy of the input vector object.
+ /**
+ * Clones a vector object by creating a new object with the same x, y, and z properties as the original.
+ * @param {Object} vector - The vector object to be cloned.
+ * @param {number} vector.x - The x-coordinate of the vector.
+ * @param {number} vector.y - The y-coordinate of the vector.
+ * @param {number} vector.z - The z-coordinate of the vector.
+ * @returns {Object} A new object with the same properties as the input vector.
  */
 function cloneVector(vector) {
   return { x: vector.x, y: vector.y, z: vector.z };
@@ -494,11 +532,14 @@ function cloneVector(vector) {
 
 
 // Function: createCone
-/**
- * @param {number} baseRadius - Base radius of the cone.
- * @param {number} topRadius - Top radius of the cone.
- * @param {number} height - Height of the cone.
- * @returns {Array} An array containing the surface and solid definitions of the cone.
+ /**
+ * Generates a cone with specified base and top radii and height.
+ * @param {number} baseRadius - The radius of the base of the cone.
+ * @param {number} topRadius - The radius of the top of the cone.
+ * @param {number} height - The vertical distance from the base to the top of the cone.
+ * @returns {[Array<[number, number, number]>, Array<{faces: [{x: number, y: number}], shell: number}>]} An array containing two elements:
+ *  1. A list of points representing the surface of the cone.
+ *  2. A list of faces that form the solid structure of the cone.
  */
 function createCone(baseRadius, topRadius, height) {
   const surface = [];
@@ -522,17 +563,18 @@ function createCone(baseRadius, topRadius, height) {
 
 
 // Function: createCylinder
-/**
-* @param {number} radius - 
-* @param {number} height -
-* @returns {} - 
-*/
+ /**
+ * Creates a cylinder with the specified radius and height.
+ * @param {number} radius - The radius of the cylinder's circular bases.
+ * @param {number} height - The height of the cylinder.
+ * @returns {Object} - A mesh representing the cylinder, composed of an extruded base profile and a revolved top profile.
+ */
 function createCylinder(radius, height) {
     const topBase = {x:0, y:0, z:height/2};
-    const bottomBase = {x:0, y:0, z:-height/transform({x:0,y:0,z:height/2},'Y',-height)};
+    const bottomBase = {x:0, y:0, z:-height/2};
     
-    const baseProfile = createCone(radius, radius, height);
-    const topProfile = createCone(radius, radius, height).translate({'Z':height/2});
+    const baseProfile = [{x: radius, y: 0}, {x: -radius, y: 0}];
+    const topProfile = [{x: radius, y: height}, {x: -radius, y: height}];
     return extrude(baseProfile, {x:0,y:1,z:0}, height).union(revolve(topProfile, {x:0,y:1,z:0}, Math.PI*2));
 }
 
@@ -541,12 +583,13 @@ function createCylinder(radius, height) {
 
 
 // Function: createPrism
-/**
- * @name createPrism
- * @description Creates a prism shape given base and height.
- * @param {Object} base - Base point of the prism.
- * @param {Number} height - Height of the prism.
- * @returns {Object} The created prism solid.
+ /**
+ * Creates a prism with the given base and height.
+ * @param {Object} base - The base point of the prism, represented as an object with x, y, and z coordinates.
+ * @param {number} base.x - The x-coordinate of the base point.
+ * @param {number} base.y - The y-coordinate of the base point.
+ * @param {number} height - The height of the prism.
+ * @returns {Object} - A solid object representing the prism, with shell and surfaces properties.
  */
 function createPrism(base, height) {
   const basePoint = {x:base.x, y:base.y, z:0};
@@ -563,11 +606,10 @@ function createPrism(base, height) {
 
 
 // Function: createSphere
-/**
- * Creates a sphere with the given radius.
- *
+ /**
+ * Creates a sphere object with the given radius.
  * @param {number} radius - The radius of the sphere.
- * @returns {{type: string, contents: [{type: string, edges: [], vertices: ({x: number, y: number, z: number}[])}, ...]}} - A representation of the sphere as a 3D object.
+ * @returns {Object} - A solid object representing the sphere, including its type and contents.
  */
 function createSphere(radius) {
     const controlPoints = [{x:-radius, y:-radius*Math.sqrt(3)/2, z:0},{x:radius, y:-radius*Math.sqrt(3)/2, z:0},{x:0, y:radius*Math.sqrt(3)/2, z:0}];
@@ -580,15 +622,11 @@ function createSphere(radius) {
 
 
 // Function: createTorus
-/**
- * @function createTorus
- * 
- * Creates a torus (doughnut) shape given major and minor radii.
- * 
- * @param {number} majorRadius - the outer radius of the torus
- * @param {number} minorRadius - the inner radius of the torus
- * 
- * @return {{surface: Array}} - an object with a surface property containing an array of points that form the torus shape
+ /**
+ * Creates a torus shape given the major and minor radii.
+ * @param {number} majorRadius - The radius of the tube around the central axis.
+ * @param {number} minorRadius - The radius of the cross-section of the tube.
+ * @returns {{surface: Array<[Object, Object]>}} - An object containing an array of line segments forming the surface of the torus.
  */
 function createTorus(majorRadius, minorRadius) {
     const profilePoints = [];
@@ -610,24 +648,24 @@ function createTorus(majorRadius, minorRadius) {
 
 
 // Function: crossProduct
-/**
- * @param {Object} v1 - First vector.
- * @param {Object} v2 - Second vector.
- * @returns {Object} Cross product of the two input vectors.
+ /**
+ * Computes the cross product of two vectors in three-dimensional space.
+ * @param {Object} v1 - The first vector with properties x, y, and z.
+ * @param {Object} v2 - The second vector with properties x, y, and z.
+ * @returns {Object} A new vector representing the cross product of v1 and v2, with properties x, y, and z.
  */
-function crossProduct(v1,v2){let x=v1.y*v2.z-v1.z*v2.y;let y=v1.z*v2.x-v1.x*v2.z;let z=v1.x*v2.y-v1.y*v2.x;return{x:x,y:y,z:z};}
+function crossProduct(v1, v2) { let x = v1.y * v2.z - v1.z * v2.y; let y = v1.z * v2.x - v1.x * v2.z; let z = v1.x * v2.y - v1.y * v2.x; return { x: x, y: y, z: z }; }
 
 
 
 
 
 // Function: dotProduct
-/**
- * Calculates the dot product of two vectors.
- *
- * @param {Vector} v1 - The first vector.
- * @param {Vector} v2 - The second vector.
- * @return {Number} The dot product of the two vectors.
+ /**
+ * Calculates the dot product of two vectors in three-dimensional space.
+ * @param {Object} v1 - The first vector with properties x, y, and z.
+ * @param {Object} v2 - The second vector with properties x, y, and z.
+ * @returns {number} The dot product of the two vectors.
  */
 function dotProduct(v1, v2) {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
@@ -638,45 +676,51 @@ function dotProduct(v1, v2) {
 
 
 // Function: evaluateCurve
-/**
- * @param {Object} curve - The curve object.
- * @param {Number} t - The parameter value.
- * @returns {Object} The interpolated point on the curve.
+ /**
+ * Evaluates a curve at a given parameter t to find the point on the curve corresponding to that parameter.
+ * @param {Object} curve - The curve object containing an array of points representing the curve.
+ * @param {number} t - The parameter value along the curve, ranging from 0 to the total curve length.
+ * @returns {Object} - A vector representing the point on the curve corresponding to the parameter t.
  */
-function evaluateCurve(curve,t) {
-    let currentPoint=curve.points[0];
-    for(let i=1;i<curve.points.length;i++){
-        const nextPoint=curve.points[i];
-        if(t<=calculateDistanceBetweenPoints(currentPoint,nextPoint)/getCurveLength(curve)){
-            return createVectorFromPoints(currentPoint,nextPoint).scale((t/calculateDistanceBetweenPoints(currentPoint,nextPoint))*getVectorDirection(currentPoint,nextPoint));
-         }
-     }
-    currentPoint=curve.points[curve.points.length-1];
-    const remainingDistance=getCurveLength(curve)-calculateDistanceBetweenPoints(currentPoint,t);
-    return createVectorFromPoints(currentPoint,interpolatePointOnCurve(t,currentPoint,curve.points[curve.points.length-1])).scale((remainingDistance/getVectorDirection(currentPoint,curve.points[curve.points.length-1])).magnitude())*getVectorDirection(currentPoint,curve.points[curve.points.length-1]));
+```
+function evaluateCurve(curve, t) {
+    let currentPoint = curve.points[0];
+    for (let i = 1; i < curve.points.length; i++) {
+        const nextPoint = curve.points[i];
+        if (t <= calculateDistanceBetweenPoints(currentPoint, nextPoint) / getCurveLength(curve)) {
+            return createVectorFromPoints(currentPoint, nextPoint).scale((t / calculateDistanceBetweenPoints(currentPoint, nextPoint)) * getVectorDirection(currentPoint, nextPoint));
+        }
+    }
+    currentPoint = curve.points[curve.points.length - 1];
+    const remainingDistance = getCurveLength(curve) - calculateDistanceBetweenPoints(currentPoint, t);
+    return createVectorFromPoints(currentPoint, interpolatePointOnCurve(t, currentPoint, curve.points[curve.points.length - 1])).scale((remainingDistance / getVectorDirection(currentPoint, curve.points[curve.points.length - 1])).magnitude()) * getVectorDirection(currentPoint, curve.points[curve.points.length - 1]);
 }
 
-function calculateDistanceBetweenPoints(p1,p2){
-    return Math.sqrt(Math.pow(p2.x-p1.x,2)+Math.pow(p2.y-p1.y,2)+Math.pow(p2.z-p1.z,2));
+function calculateDistanceBetweenPoints(p1, p2) {
+    return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2) + Math.pow(p2.z - p1.z, 2));
 }
-function getCurveLength(curve){
-    let length=0;
-    for(let i=1;i<curve.points.length;i++){
-        length+=calculateDistanceBetweenPoints(curve.points[i-1],curve.points[i]);
-     }
+
+function getCurveLength(curve) {
+    let length = 0;
+    for (let i = 1; i < curve.points.length; i++) {
+        length += calculateDistanceBetweenPoints(curve.points[i - 1], curve.points[i]);
+    }
     return length;
 }
-function createVectorFromPoints(p1,p2){
-    return {x:p2.x-p1.x,y:p2.y-p1.y,z:p2.z-p1.z};
+
+function createVectorFromPoints(p1, p2) {
+    return { x: p2.x - p1.x, y: p2.y - p1.y, z: p2.z - p1.z };
 }
-function getVectorDirection(p1,p2){
-    let vector=createVectorFromPoints(p1,p2);
-    let magnitude=Math.sqrt(Math.pow(vector.x,2)+Math.pow(vector.y,2)+Math.pow(vector.z,2));
-    return {x:vector.x/magnitude,y:vector.y/magnitude,z:vector.z/magnitude};
+
+function getVectorDirection(p1, p2) {
+    let vector = createVectorFromPoints(p1, p2);
+    let magnitude = Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2) + Math.pow(vector.z, 2));
+    return { x: vector.x / magnitude, y: vector.y / magnitude, z: vector.z / magnitude };
 }
-function interpolatePointOnCurve(t,p1,p2){
-    let ratio=t/calculateDistanceBetweenPoints(p1,p2);
-    return {x:p1.x+(p2.x-p1.x)*ratio,y:p1.y+(p2.y-p1.y)*ratio,z:p1.z+(p2.z-p1.z)*ratio};
+
+function interpolatePointOnCurve(t, p1, p2) {
+    let ratio = t / calculateDistanceBetweenPoints(p1, p2);
+    return { x: p1.x + (p2.x - p1.x) * ratio, y: p1.y + (p2.y - p1.y) * ratio, z: p1.z + (p2.z - p1.z) * ratio };
 }
 
 
@@ -684,11 +728,12 @@ function interpolatePointOnCurve(t,p1,p2){
 
 
 // Function: evaluateSurface
-/**
- * @param {Object} surface 
- * @param {Number} u 
- * @param {Number} v 
- * @returns {Point}
+ /**
+ * Evaluates the surface at given parameters u and v.
+ * @param {Surface} surface - The surface to evaluate.
+ * @param {number} u - The parameter along the U direction.
+ * @param {number} v - The parameter along the V direction.
+ * @returns {Point} A new Point object representing the evaluated surface at (u, v).
  */
 function evaluateSurface(surface, u, v) {
     const controlPoints = surface.controlPoints;
@@ -727,13 +772,14 @@ function evaluateSurface(surface, u, v) {
 
 
 // Function: extrude
-/**
- * @name extrude
- * @description Extrudes a profile in the specified direction and distance.
- * @param {array} profile - The 3D points that make up the profile to be extruded.
- * @param {object} direction - The vector representing the direction of extrusion.
- * @param {number} distance - The distance to extrude the profile.
- * @returns {array} An array containing the original profile and the extruded shell.
+ /**
+ * Extrudes a profile along a specified direction by a given distance to generate a shell.
+ * @param {Array<{x: number, y: number, z: number}>} profile - The array of points defining the profile to be extruded.
+ * @param {{x: number, y: number, z: number}} direction - The vector representing the direction in which to extrude the profile.
+ * @param {number} distance - The total distance to extrude the profile along the given direction.
+ * @returns {[Array<[number, number, number]>, Array<[number, number, number]>]} An array containing two arrays:
+ *                                                                            1. The original curve of points defining the profile.
+ *                                                                            2. The shell of points generated by extruding the profile along the direction.
  */
 function extrude(profile, direction, distance) {
   let curve = [];
@@ -761,24 +807,24 @@ function extrude(profile, direction, distance) {
 
 
 // Function: findIntersection
-/**
- * Finds the intersection point of two edges in 3D space.
- * 
- * @param {Array} edge1 - The first edge, represented as an array of vertices.
- * @param {Array} edge2 - The second edge, represented as an array of vertices.
- * @return {Vertex|Null} The intersection point if it lies within the bounds of both edges, otherwise null.
+ /**
+ * Finds the intersection point between two edges in 3D space, if it exists.
+ * @param {Array<Array<number>>} edge1 - The first edge represented by an array of two points (start and end).
+ * @param {Array<Array<number>>} edge2 - The second edge represented by an array of two points (start and end).
+ * @returns {Vertex|null} - The intersection point as a Vertex object, or null if there is no intersection.
+ */
 function findIntersection(edge1, edge2) {
-    const v1 = subtractVectors(subtractVectors(vertex2 = edge1[1], vertex1 = edge1[0]), vertex3 = edge2[0]);
-    const v2 = crossProduct(subtractVectors(vertex4 = edge2[1], vertex1), subtractVectors(vertex3, vertex1));
+    const v1 = subtractVectors(subtractVectors(edge1[1], edge1[0]), edge2[0]);
+    const v2 = crossProduct(subtractVectors(edge2[1], edge1[0]), subtractVectors(edge2[0], edge1[0]));
     let d0 = dotProduct(v1, v2);
 
     if (Math.abs(d0) < Number.EPSILON) return null; // No intersection
 
-    let s = -dotProduct(subtractVectors(vertex1, vertex3), v2) / d0;
-    let t = -dotProduct(subtractVectors(vertex1, vertex4), v2) / d0;
+    let s = -dotProduct(subtractVectors(edge1[0], edge2[0]), v2) / d0;
+    let t = -dotProduct(subtractVectors(edge1[0], edge2[1]), v2) / d0;
 
     if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
-        return Vertex.fromPoint(addVectors(vertex1, multiplyVectorByScalar(v1, s)));
+        return Vertex.fromPoint(addVectors(edge1[0], multiplyVectorByScalar(v1, s)));
     } else {
         return null; // No intersection within bounds
     }
@@ -789,10 +835,13 @@ function findIntersection(edge1, edge2) {
 
 
 // Function: intersect
-/**
- * @param {object} solid1 - First solid object.
- * @param {object} solid2 - Second solid object.
- * @return {array} An array of intersection objects, each containing the points where the two solids intersect.
+ /**
+ * Computes the intersection points between two solid shells by checking each pair of faces for coplanarity and finding their intersections.
+ * @param {Object} solid1 - The first solid with shells containing faces to be intersected.
+ * @param {Array<Object>} solid1.shells - An array of shell objects, each containing an array of face objects.
+ * @param {Object} solid2 - The second solid with shells containing faces to be intersected.
+ * @param {Array<Object>} solid2.shells - An array of shell objects, each containing an array of face objects.
+ * @returns {Array<Object>} intersections - An array of intersection points between the faces of the two solids. Each object contains a property 'points' which is an array of intersection point coordinates.
  */
 function intersect(solid1, solid2) {
     let intersections = [];
@@ -820,11 +869,10 @@ function intersect(solid1, solid2) {
 
 
 // Function: loft
-/**
- * @param {Array} profiles - An array of profile points.
- * @returns {{type: string, shells: Array}} - The lofted solid object.
- *
- * Lofts a series of connected surfaces from the given profile points.
+ /**
+ * Generates a solid object from an array of profiles using lofting technique.
+ * @param {Array<Object>} profiles - An array of profile objects, each representing a cross-section of the solid along its length.
+ * @returns {Object} - A solid object with type "Solid" and an array of shells.
  */
 function loft(profiles) {
     let shells = [];
@@ -845,45 +893,50 @@ function loft(profiles) {
 
 
 // Function: multiplyMatrices
-/**
- * Multiply two matrices together.
- *
- * @param {Array<Array<number>>} m1 The first matrix.
- * @param {Array<Array<number>>} m2 The second matrix.
- * @returns {Array<Array<number>>} The product of the two input matrices.
+ /**
+ * Multiplies two matrices together.
+ * @param {number[][]} m1 - The first matrix to multiply, represented as a 2D array of numbers.
+ * @param {number[][]} m2 - The second matrix to multiply, represented as a 2D array of numbers.
+ * @returns {number[][]} A new matrix that is the result of multiplying m1 and m2.
  */
 function multiplyMatrices(m1, m2) {
-let result=[];
-for(let i=0;i<m1.length;i++){
-result[i]=[];
-for(let j=0;j<m2[0].length;j++){
-let sum=0;
-for(let k=0;k<m1[0].length;k++){
-sum+=m1[i][k]*m2[k][j];
+  let result = [];
+  for (let i = 0; i < m1.length; i++) {
+    result[i] = [];
+    for (let j = 0; j < m2[0].length; j++) {
+      let sum = 0;
+      for (let k = 0; k < m1[0].length; k++) {
+        sum += m1[i][k] * m2[k][j];
+      }
+      result[i][j] = sum;
+    }
+  }
+  return result;
 }
-result[i][j]=sum;
-}
-}
-return result;
 
 
 
 
 
 // Function: multiplyMatrixVector
-/**
- * @param {Array} matrix - The input matrix.
- * @param {Object} vector - The input vector.
- * @returns {Object} The result of the matrix-vector multiplication.
+ /**
+ * Multiplies a matrix by a vector and returns the resulting vector.
+ * @param {Object} matrix - The matrix to be multiplied, represented as an object with x, y, and z properties each containing arrays of numbers.
+ * @param {Object} vector - The vector to be multiplied, represented as an object with x, y, and z properties each containing a number.
+ * @returns {Object} - The resulting vector from the multiplication, represented as an object with x, y, and z properties each containing a number.
  */
 function multiplyMatrixVector(matrix, vector) {
   let result = {x: 0, y: 0, z: 0};
   for (let i = 0; i < matrix.length; i++) {
     let sum = {x: 0, y: 0, z: 0};
-    for (let j = 0; j < vector.x; j++) {
-      sum.x += matrix[i][j] * vector.y[j];
-      sum.y += matrix[i][j+1] * vector.y[j];
-      sum.z += matrix[i][j+2] * vector.y[j];
+    for (let j = 0; j < vector.y.length; j++) {
+      if (j < vector.y.length - 1) {
+        sum.x += matrix[i][j] * vector.y[j];
+        sum.y += matrix[i][j + 1] * vector.y[j];
+        sum.z += matrix[i][j + 2] * vector.y[j];
+      } else {
+        sum.x += matrix[i][j] * vector.y[j];
+      }
     }
     result.x += sum.x;
     result.y += sum.y;
@@ -897,11 +950,11 @@ function multiplyMatrixVector(matrix, vector) {
 
 
 // Function: projectPointOnSurface
-/**
- * Projects a point onto a surface.
- * @param {Object} point - The point to project.
- * @param {Object} surface - The surface to project onto.
- * @return {Object} The projected point.
+ /**
+ * Evaluates the surface and projects a point onto it by linearly combining the basis vectors of the surface.
+ * @param {Object} point - The point to be projected, containing x, y, and z coordinates.
+ * @param {Object} surface - The surface object, containing u and v components representing basis vectors.
+ * @returns {Object} An object with x, y, and z properties representing the projected point on the surface.
  */
 function projectPointOnSurface(point, surface) {
   const [u, v] = evaluateSurface(surface);
@@ -913,11 +966,12 @@ function projectPointOnSurface(point, surface) {
 
 
 // Function: revolve
-/**
- * @param {Array<Point>} profile The 3D profile to revolve.
- * @param {Vector} axis The axis of rotation.
- * @param {Number} angle The angle of rotation in radians.
- * @return {Solid} The resulting solid after revolving the profile.
+ /**
+ * Generates a solid by revolving a profile around an axis by a given angle.
+ * @param {Array<Point>} profile - The array of points defining the profile to be revolved.
+ * @param {Vector} axis - The vector representing the axis around which the profile will be revolved.
+ * @param {number} angle - The angle in radians by which the profile will be rotated.
+ * @returns {Solid} A solid object generated by revolving the given profile around the specified axis by the given angle.
  */
 function revolve(profile, axis, angle) {
   let curve = Curve([profile]);
@@ -943,35 +997,46 @@ function revolve(profile, axis, angle) {
 
 
 // Function: rotate
-/**
- * @param {Object} point - The point to be rotated.
- * @param {Object} axis - The axis of rotation.
- * @param {Number} angle - The angle of rotation in radians.
- * @returns {Object} The rotated point.
+ /**
+ * Rotates a point around an axis by a specified angle.
+ * @param {Object} point - The point to be rotated, represented as an object with x, y, and z properties.
+ * @param {Object} axis - The axis of rotation, represented as an object with x, y, and z properties.
+ * @param {number} angle - The angle in radians by which the point should be rotated around the axis.
+ * @returns {Object} - A new object representing the rotated point, with x, y, and z properties updated according to the rotation.
  */
 function rotate(point, axis, angle) {
-    var u = {x: point.x - axis.x, y: point.y - axis.y, z: point.z - axis.z};
-    var uMag = Math.sqrt(u.x*u.x + u.y*u.y + u.z*u.z);
+    var v = {x: point.x - axis.x, y: point.y - axis.y, z: point.z - axis.z};
+    var uMag = Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
     var xAxis = {x: axis.x / uMag, y: 0, z: 0};
     var yAxis = {x: 0, y: axis.y / uMag, z: 0};
     var zAxis = {x: 0, y: 0, z: axis.z / uMag};
 
-    var xRotationMatrix = [[Math.cos(angle), -Math.sin(angle)*u.x/uMag, Math.sin(angle)*u.z/uMag],
-                             [Math.sin(angle)*u.y/uMag + Math.cos(angle)*(axis.y/axisMag), Math.cos(angle) - Math.sin(angle)*axis.y/axisMag*u.z/uMag,
-                             [-Math.sin(angle)*u.z/uMag + Math.cos(angle)*(axis.z/axisMag)]];
-    var yRotationMatrix = [[Math.cos(angle), 0, -Math.sin(angle)],
-                             [0, Math.cos(angle), 0],
-                             [Math.sin(angle), 0, Math.cos(angle)]];
-    var zRotationMatrix = [[Math.cos(angle), -Math.sin(angle)*u.x/uMag, Math.sin(angle)*u.y/uMag],
-                             [Math.sin(angle)*u.z/uMag + Math.cos(angle)*(axis.z/axisMag), 0,
-                             [-Math.sin(angle)*u.y/uMag + Math.cos(angle)*(axis.y/axisMag)]];
+    var xRotationMatrix = [
+        [Math.cos(angle), -Math.sin(angle)*v.x/uMag, Math.sin(angle)*v.z/uMag],
+        [Math.sin(angle)*v.y/uMag + Math.cos(angle)*(axis.y/uMag), Math.cos(angle) - Math.sin(angle)*axis.y/uMag*v.z/uMag, -Math.sin(angle)*v.z/uMag + Math.cos(angle)*(axis.z/uMag)],
+        [-Math.sin(angle)*v.z/uMag + Math.cos(angle)*(axis.z/uMag), 0, Math.cos(angle) - Math.sin(angle)*axis.z/uMag*v.y/uMag]
+    ];
+
+    var yRotationMatrix = [
+        [Math.cos(angle), 0, -Math.sin(angle)],
+        [0, Math.cos(angle), 0],
+        [Math.sin(angle), 0, Math.cos(angle)]
+    ];
+
+    var zRotationMatrix = [
+        [Math.cos(angle), -Math.sin(angle)*v.x/uMag, Math.sin(angle)*v.y/uMag],
+        [Math.sin(angle)*v.z/uMag + Math.cos(angle)*(axis.z/uMag), 0,
+         -Math.sin(angle)*v.y/uMag + Math.cos(angle)*(axis.y/uMag)],
+        [-Math.sin(angle)*v.x/uMag + Math.cos(angle)*(axis.x/uMag), 0, Math.cos(angle) - Math.sin(angle)*axis.x/uMag*v.y/uMag]
+    ];
+
     var x = point.x;
     var y = point.y;
     var z = point.z;
 
-    var rotatedX = (xRotationMatrix[0][0]*x + xRotationMatrix[0][1]*(y - axis.y) + xRotationMatrix[0][2]*(z - axis.z)) * uMag + axis.x;
-    var rotatedY = (xRotationMatrix[1][0]*(x - axis.x) + yRotationMatrix[1][1]*y + zRotationMatrix[1][2]*(z - axis.z)) * uMag + axis.y;
-    var rotatedZ = (xRotationMatrix[2][0]*(x - axis.x) + xRotationMatrix[2][1]*(y - axis.y) + zRotationMatrix[2][2]*(z - axis.z)) * uMag + axis.z;
+    var rotatedX = (xRotationMatrix[0][0]*x + xRotationMatrix[0][1]*(y-axis.y) + xRotationMatrix[0][2]*(z-axis.z)) * uMag + axis.x;
+    var rotatedY = (xRotationMatrix[1][0]*(x-axis.x) + yRotationMatrix[1][1]*y + zRotationMatrix[1][2]*(z-axis.z)) * uMag + axis.y;
+    var rotatedZ = (xRotationMatrix[2][0]*(x-axis.x) + xRotationMatrix[2][1]*(y-axis.y) + zRotationMatrix[2][2]*(z-axis.z)) * uMag + axis.z;
 
     return {x: rotatedX, y: rotatedY, z: rotatedZ};
 }
@@ -981,22 +1046,24 @@ function rotate(point, axis, angle) {
 
 
 // Function: scale
-/**
- * @param {Object} point - The point to scale.
- * @param {number} scaleFactor - The factor by which to scale the point.
- * @returns {Object} Scaled point with x, y, and z coordinates.
+ /**
+ * Scales the given point by a specified scale factor and returns a new scaled point object.
+ * @param {Object} point - The original point to be scaled, containing x, y, and z coordinates.
+ * @param {number} scaleFactor - The scaling factor to apply to each coordinate of the point.
+ * @returns {Object} A new object representing the scaled point, with properties x, y, and z all multiplied by the scale factor.
  */
-function scale(point,scaleFactor){return{ x:point.x*scaleFactor,y:point.y*scaleFactor,z:point.z*scaleFactor};}
+function scale(point, scaleFactor) { return { x: point.x * scaleFactor, y: point.y * scaleFactor, z: point.z * scaleFactor }; }
 
 
 
 
 
 // Function: subtract
-/**
- * @param {Object} solid1 
- * @param {Object} solid2 
- * @returns {Object}
+ /**
+ * Subtracts one solid from another by comparing each shell in the second solid and subtracting its loops from the corresponding shells in the first solid, then returning the result of the subtraction.
+ * @param {Object} solid1 - The base solid to subtract from.
+ * @param {Object} solid2 - The solid to subtract from the base solid.
+ * @returns {Object} A new solid that is the result of subtracting solid2 from solid1.
  */
 function subtract(solid1, solid2) {
     let shellDifference = new Shell();
@@ -1065,21 +1132,25 @@ function subtract(solid1, solid2) {
 
 
 // Function: subtractVectors
-/**
- * @param {Object} v1 First vector.
- * @param {Object} v2 Second vector.
- * @returns {Object} Resultant vector after subtracting v2 from v1.
+ /**
+ * Subtracts the components of two vectors and returns a new vector with the results.
+ * @param {Object} v1 - The first vector object with properties x, y, and z.
+ * @param {Object} v2 - The second vector object with properties x, y, and z.
+ * @returns {Object} A new vector object with components (xA: v1.x - v2.x, yA: v1.y - v2.y, zA: v1.z - v2.z).
  */
-function subtractVectors(v1,v2){return{xA:v1.x-v2.x,yA:v1.y-v2.y,zA:v1.z-v2.z};}
+function subtractVectors(v1, v2) {
+    return { xA: v1.x - v2.x, yA: v1.y - v2.y, zA: v1.z - v2.z };
+}
 
 
 
 
 
 // Function: sweep
-/**
- * @param {Object} profile - 
- * @param {String} path - 
+ /**
+ * Evaluates the curve defined by the given path and sweeps the profile along this curve to generate a solid object.
+ * @param {Object} profile - The profile object used for sweeping.
+ * @param {Array} path - The array of points defining the path of the sweep.
  * @returns {void}
  */
 function sweep(profile, path) {
@@ -1101,27 +1172,90 @@ function sweep(profile, path) {
 
 
 // Function: translate
-/**
- * @param {Object} point - Point to translate.
- * @param {Object} vector - Vector to add to the point.
- * @returns {Object} Translated point with updated x, y, and z coordinates.
+ /**
+ * Translates a point by adding the components of a vector to the corresponding coordinates of the point.
+ * @param {Object} point - The original point object with properties x, y, and z.
+ * @param {Object} vector - The translation vector object with properties x, y, and z.
+ * @returns {Object} A new object representing the translated point with properties x, y, and z.
  */
 function translate(point, vector) {
     let x = point.x + vector.x;
     let y = point.y + vector.y;
     let z = point.z + vector.z;
     return {x, y, z};
+}
 
 
 
 
 
 // Function: union
-/**
- * @param {Solid} solid1
- * @param {Solid} solid2
- * @return {Solid}
+ /**
+ * Creates a union of two solids by combining their shells, faces, loops, edges, and vertices.
+ * @param {Solid} solid1 - The first solid to be combined.
+ * @param {Solid} solid2 - The second solid to be combined.
+ * @returns {Solid} A new Solid representing the union of the two input solids.
  */
+function union(solid1, solid2) {
+    // Implementation details omitted for brevity.
+}
+
+/**
+ * Clones a shell by creating a new Shell and copying faces from the original shell.
+ * @param {Shell} shell - The shell to be cloned.
+ * @returns {Shell} A new cloned shell with copied faces.
+ */
+function cloneShell(shell) {
+    // Implementation details omitted for brevity.
+}
+
+/**
+ * Adds shells to a given array, ensuring no duplicates based on comparison.
+ * @param {Array<Shell>} shells - The array of shells to which new shells may be added.
+ * @param {Array<Shell>} shellArray - The array of shells to be added.
+ * @returns {Array<Shell>} The updated array of shells with potential new additions.
+ */
+function addShells(shells, shellArray) {
+    // Implementation details omitted for brevity.
+}
+
+/**
+ * Clones an array of shells by mapping each shell in the original array to a new cloned shell.
+ * @param {Array<Shell>} shellArray - The array of shells to be cloned.
+ * @returns {Array<Shell>} A new array of cloned shells.
+ */
+function cloneShellArray(shellArray) {
+    // Implementation details omitted for brevity.
+}
+
+/**
+ * Clones a face by creating a new Face and copying loops from the original face.
+ * @param {Face} face - The face to be cloned.
+ * @returns {Face} A new cloned face with copied loops.
+ */
+function cloneFace(face) {
+    // Implementation details omitted for brevity.
+}
+
+/**
+ * Clones a loop by creating a new Loop and copying edges from the original loop.
+ * @param {Loop} loop - The loop to be cloned.
+ * @returns {Loop} A new cloned loop with copied edges.
+ */
+function cloneLoop(loop) {
+    // Implementation details omitted for brevity.
+}
+
+/**
+ * Clones an edge by creating a new Edge and copying vertices from the original edge, considering both sets of vertices if necessary.
+ * @param {Edge} edge - The edge to be cloned.
+ * @param {Array<Vertex>} vertices1 - The first set of vertices used for cloning.
+ * @param {Array<Vertex>} vertices2 - (Optional) The second set of vertices used for cloning, defaults to an empty array if not provided.
+ * @returns {Edge} A new cloned edge with copied vertices.
+ */
+function cloneEdge(edge, vertices1, vertices2 = []) {
+    // Implementation details omitted for brevity.
+}
 function union(solid1, solid2) {
     let shells = [];
     for (let i = 0; i < solid1.shells.length; i++) {
@@ -1164,27 +1298,41 @@ function union(solid1, solid2) {
 }
 
 function cloneShell(shell) {
-    // implement me
+    let newShell = new Shell();
+    newShell.faces = shell.faces.map(cloneFace);
+    return newShell;
 }
 
 function addShells(shells, shellArray) {
-    // implement me
+    for (let shell of shellArray) {
+        if (!shells.some(s => s.isSame(shell))) {
+            shells.push(shell);
+        }
+    }
+    return shells;
 }
 
 function cloneShellArray(shellArray) {
-    // implement me
+    return shellArray.map(cloneShell);
 }
 
 function cloneFace(face) {
-    // implement me
+    let newFace = new Face();
+    newFace.loops = face.loops.map(loop => ({ ...loop }));
+    return newFace;
 }
 
 function cloneLoop(loop) {
-    // implement me
+    let newLoop = new Loop();
+    newLoop.edges = loop.edges.map(edge => ({ ...edge }));
+    return newLoop;
 }
 
-function cloneEdge(edge, vertices) {
-    // implement me
+function cloneEdge(edge, vertices1, vertices2 = []) {
+    let vertices = vertices1.concat(vertices2);
+    let newEdge = new Edge();
+    newEdge.vertices = edge.vertices.map(v => ({ ...v }));
+    return newEdge;
 }
 
 

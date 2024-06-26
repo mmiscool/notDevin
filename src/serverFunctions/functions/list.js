@@ -1,4 +1,5 @@
 import { db } from './schema.js';
+import { fileIOwrite } from '../../fileIO.js';
 
 const debugMode = false;
 
@@ -13,8 +14,31 @@ export default async function function_list(inputObject) {
         if (listOfFunctions[i].code == "" || listOfFunctions[i].code == undefined) listOfFunctions[i].needsGeneration = "true";
         if (listOfFunctions[i].errorLogs != "") listOfFunctions[i].needsGeneration = "true";
 
-        if (listOfFunctions[i].needsGeneration == "true"  && debugMode) console.log("Function: ", listOfFunctions[i]._id, "needs generation");
-        //if (listOfFunctions[i]._id == "blendPoints") console.log("Function: ", listOfFunctions[i]._id, listOfFunctions[i].needsGeneration, listOfFunctions[i].code);
+        if (listOfFunctions[i].needsGeneration == "true" && debugMode) console.log("Function: ", listOfFunctions[i]._id, "needs generation");
+
+        try {
+            fileIOwrite("../projectData/" + inputObject.projectName + "/functions/" + listOfFunctions[i]._id + ".js", listOfFunctions[i].code);
+
+            // make a markdown file with the specificaion of the function
+            let functionSpecification = "";
+            functionSpecification += "## " + listOfFunctions[i]._id + "\n";
+            functionSpecification += "### Arguments: \n";
+            functionSpecification += listOfFunctions[i].arguments + "\n";
+            functionSpecification += "### Specification: \n";
+            functionSpecification += listOfFunctions[i].specification + "\n";
+   
+
+
+            fileIOwrite("../projectData/" + inputObject.projectName + "/functions/" + listOfFunctions[i]._id + ".md", functionSpecification);
+
+            console.log(listOfFunctions[i]);
+        } catch (err) {
+            console.log(err);
+        }
+
+
+
+
     }
 
 

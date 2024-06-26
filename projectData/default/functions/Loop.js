@@ -1,0 +1,1 @@
+function Loop(edges){let result=[];for(let i=0;i<edges.length;i++){const currentEdge=edges[i];const nextEdge=edges[(i+1)%edges.length];if(!findIntersection(currentEdge,nextEdge)){result.push([currentEdge,nextEdge]);}else{console.error(`Intersection detected between edge ${i} and edge ${(i+1)%edges.length}. Loop creation interrupted.`);break;}}return result;}
