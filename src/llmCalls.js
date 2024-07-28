@@ -65,13 +65,15 @@ export async function invokeLLMraw(props) {
 
 
 
-export async function callLLM(prompt, model = "codegemma", user = "user") {
+export async function callLLM(prompt, model = "codegemma", user = "user", context = null) {
   console.log(`running Prompt: --------------------------------------------------------- \n${prompt}`);
   let chatConfig = {
     model,
     role: user,
     content: prompt
   };
+
+  if (context) chatConfig.context = context;
 
   const response = await invokeLLM(chatConfig);  // Call the invokeLLM function
   console.log(`Response: --------------------------------------------------------------- \n${response}`);  // Log the response
@@ -84,11 +86,6 @@ export async function callLLM(prompt, model = "codegemma", user = "user") {
 export async function installModel(modelName, forceInstall = false) {
   // check if the model is already installed
   const models = await ollama.list();
-
-  //const model = models.models.find(m => m.name === modelName);
-  // modelName in the models.models list has a : character between the model name and the version number
-  // so we need to split the string and get the first element
-
   const model = models.models.find(m => m.name.split(":")[0] === modelName);
 
   if (model && !forceInstall) {
@@ -121,11 +118,8 @@ export async function installModel(modelName, forceInstall = false) {
         console.log(part.status)
       }
     }
-
-
-    // const response = await ollama.pull({ model: modelName });
     console.log(`Model installed successfully!`);
-    // console.log(response);
+
   } catch (error) {
     console.error(`Model installation failed!`);
     console.error(error);
@@ -148,9 +142,9 @@ export async function listModels() {
 
 installModel("phi3");
 installModel("mistral")
-// installModel("codegemma");
-// installModel("codellama");
-// installModel("llama2");
+installModel("codegemma");
+installModel("codellama");
+installModel("llama2");
 
 
 
@@ -182,6 +176,3 @@ export async function templateCallLLM(templateName, data) {
 
   return await callLLM(template, data.model, data.user);
 }
-
-//listModels();
-

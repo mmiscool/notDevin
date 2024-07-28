@@ -17,16 +17,17 @@ export async function fileIOwrite(fileName, data) {
 }
 
 // function to read a whole text file into a string
-export function fileIOread(fileName, createIfNotExist = false) {
+// if the file dose not exist and defaultContentsIfNotExist is set to a string, the file will be created with the default contents
+export function fileIOread(fileName, defaultContentsIfNotExist = false) {
     //console.log('Reading file:', fileName);
     let fileContents = "";
     try {
         fileContents = fs.readFileSync(fileName, 'utf8');
     } catch (err) {
         if (fileIOdebugMode == true) console.log('Error reading file:', fileName);
-        if (createIfNotExist) {
-            fileIOwrite(fileName, createIfNotExist);
-            return createIfNotExist;
+        if (defaultContentsIfNotExist) {
+            fileIOwrite(fileName, defaultContentsIfNotExist);
+            return defaultContentsIfNotExist;
         }
         return "";  // Return empty string if file dose not exist 
     }

@@ -12,7 +12,7 @@ export default async function function_generate(inputObject) {
     let myFunction = await function_read(inputObject);
     const functionName = myFunction._id;
 
-    console.log("here is the function object", myFunction);
+    //console.log("here is the function object", myFunction);
 
 
     myFunction.arguments = await addTextChunkLabel("function input arguments", myFunction.arguments);

@@ -17,7 +17,8 @@ export default async function function_list(inputObject) {
         if (listOfFunctions[i].needsGeneration == "true" && debugMode) console.log("Function: ", listOfFunctions[i]._id, "needs generation");
 
         try {
-            fileIOwrite("../projectData/" + inputObject.projectName + "/functions/" + listOfFunctions[i]._id + ".js", listOfFunctions[i].code);
+            fileIOwrite(`../projectData/${inputObject.projectName}/functions/${listOfFunctions[i]._id}(${listOfFunctions[i].arguments}).js`
+            , listOfFunctions[i].code);
 
             // make a markdown file with the specificaion of the function
             let functionSpecification = "";
@@ -29,9 +30,9 @@ export default async function function_list(inputObject) {
    
 
 
-            fileIOwrite("../projectData/" + inputObject.projectName + "/functions/" + listOfFunctions[i]._id + ".md", functionSpecification);
+            fileIOwrite(`../projectData/${inputObject.projectName}/functions/${listOfFunctions[i]._id}(${listOfFunctions[i].arguments}).md`, functionSpecification);
 
-            console.log(listOfFunctions[i]);
+            if (debugMode) console.log(listOfFunctions[i]);
         } catch (err) {
             console.log(err);
         }

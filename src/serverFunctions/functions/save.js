@@ -5,6 +5,7 @@ import * as escodegen from 'escodegen';
 import * as estraverse from 'estraverse';
 import compile_build from './build.js';
 
+
 const debugMode = false;
 
 export default async function function_save(inputObject) {
@@ -23,7 +24,7 @@ export default async function function_save(inputObject) {
         }
     }
 
-    inputObject.errorLogs = await extractJSstructure(inputObject.code);
+    inputObject.errorLogs = await extractJSstructure(inputObject);
 
 
     // set needsGeneration to true if the errorLogs are not empty
@@ -48,7 +49,8 @@ export default async function function_save(inputObject) {
 
 
 
-async function extractJSstructure(code) {
+async function extractJSstructure(inputObject) {
+    let code = inputObject.code;
     if (debugMode  === true) console.log("extractJSstructure", code);
     if (code == undefined) return "";
     if (code == "") return "";
@@ -70,7 +72,25 @@ async function extractJSstructure(code) {
         });
 
         // Rebuilding the JavaScript code from the AST
-        const generatedCode = escodegen.generate(ast);
+        const formattedCode = escodegen.generate(ast, {
+            format: {
+                indent: {
+                    style: '    ', // 4 spaces for indentation
+                },
+                newline: '\n', // Use '\n' for newlines
+                space: ' ', // Use a single space for separating elements
+                json: false, // Do not generate JSON-style formatting
+                renumber: false, // Do not renumber numeric literals
+                hexadecimal: false, // Do not use hexadecimal numbers
+                quotes: 'single', // Use single quotes for strings
+                escapeless: false, // Do not escape characters unnecessarily
+                compact: false, // Do not compact the code
+                parentheses: true, // Keep parentheses around expressions
+                semicolons: true // Use semicolons
+            }
+        });
+        inputObject.code = formattedCode;
+        console.log("formattedCode", code);
 
         return "";
     } catch (error) {

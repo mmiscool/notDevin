@@ -1,18 +1,22 @@
 // Function: Curve
  /**
- * Represents a curve with an array of points.
+ * Represents a curve defined by an array of points.
  * @constructor
- * @param {Array} [points] - An optional array of points to initialize the curve.
+ * @param {Array} [points] - The initial points that define the curve.
+ * @property {Array} points - The array of points defining the curve.
+ * @method getPoints - Returns the current points of the curve.
+ * @method setPoint - Sets a point at a specific index in the curve's points array.
  */
-
 function Curve(points) {
-  this.points = points || [];
-  this.getPoints = function() { return this.points; };
-  this.setPoint = function(i, point) {
-    if (i >= 0 && i < this.points.length) {
-      this.points[i] = point;
-    }
-  };
+    this.points = points || [];
+    this.getPoints = function () {
+        return this.points;
+    };
+    this.setPoint = function (i, point) {
+        if (i >= 0 && i < this.points.length) {
+            this.points[i] = point;
+        }
+    };
 }
 
 
@@ -25,12 +29,20 @@ function Curve(points) {
  * @constructor
  * @param {number[]} vertex1 - The coordinates of the first vertex as an array [x, y, z].
  * @param {number[]} vertex2 - The coordinates of the second vertex as an array [x, y, z].
- * @property {Object} vertexA - The first vertex with its coordinates.
- * @property {Object} vertexB - The second vertex with its coordinates.
+ * @property {Object} vertexA - The first vertex with its x, y, and z coordinates.
+ * @property {Object} vertexB - The second vertex with its x, y, and z coordinates.
  */
 function Edge(vertex1, vertex2) {
-  this.vertexA = {x: vertex1[0], y: vertex1[1], z: vertex1[2]};
-  this.vertexB = {x: vertex2[0], y: vertex2[1], z: vertex2[2]};
+    this.vertexA = {
+        x: vertex1[0],
+        y: vertex1[1],
+        z: vertex1[2]
+    };
+    this.vertexB = {
+        x: vertex2[0],
+        y: vertex2[1],
+        z: vertex2[2]
+    };
 }
 
 
@@ -570,12 +582,45 @@ function createCone(baseRadius, topRadius, height) {
  * @returns {Object} - A mesh representing the cylinder, composed of an extruded base profile and a revolved top profile.
  */
 function createCylinder(radius, height) {
-    const topBase = {x:0, y:0, z:height/2};
-    const bottomBase = {x:0, y:0, z:-height/2};
-    
-    const baseProfile = [{x: radius, y: 0}, {x: -radius, y: 0}];
-    const topProfile = [{x: radius, y: height}, {x: -radius, y: height}];
-    return extrude(baseProfile, {x:0,y:1,z:0}, height).union(revolve(topProfile, {x:0,y:1,z:0}, Math.PI*2));
+    const topBase = {
+        x: 0,
+        y: 0,
+        z: height / 2
+    };
+    const bottomBase = {
+        x: 0,
+        y: 0,
+        z: -height / 2
+    };
+    const baseProfile = [
+        {
+            x: radius,
+            y: 0
+        },
+        {
+            x: -radius,
+            y: 0
+        }
+    ];
+    const topProfile = [
+        {
+            x: radius,
+            y: height
+        },
+        {
+            x: -radius,
+            y: height
+        }
+    ];
+    return extrude(baseProfile, {
+        x: 0,
+        y: 1,
+        z: 0
+    }, height).union(revolve(topProfile, {
+        x: 0,
+        y: 1,
+        z: 0
+    }, Math.PI * 2));
 }
 
 
@@ -737,14 +782,16 @@ function interpolatePointOnCurve(t, p1, p2) {
  */
 function evaluateSurface(surface, u, v) {
     const controlPoints = surface.controlPoints;
-    
-    if (u === 0 && v === 0) return new Point();
-    
+    if (u === 0 && v === 0)
+        return new Point();
     const uVector = [];
     for (let i = 0; i < controlPoints.length - 1; i++) {
-        uVector.push([controlPoints[i][0] - controlPoints[i + 1][0], controlPoints[i][1] - controlPoints[i + 1][1], controlPoints[i][2] - controlPoints[i + 1][2]]);
+        uVector.push([
+            controlPoints[i][0] - controlPoints[i + 1][0],
+            controlPoints[i][1] - controlPoints[i + 1][1],
+            controlPoints[i][2] - controlPoints[i + 1][2]
+        ]);
     }
-    
     const point = new Point();
     for (let i = 0; i < surface.loops.length; i++) {
         let localU = 0;
@@ -753,17 +800,18 @@ function evaluateSurface(surface, u, v) {
             localU += surface.loops[i][j][0] * uVector[j][0];
             localV += surface.loops[i][j][0] * (evaluateCurve(surface.loops[i], v)[0] - surface.loops[i][j][0]) + surface.loops[i][j][1] * (evaluateCurve(surface.loops[i], v)[1] - surface.loops[i][j][1]);
         }
-        
         point = new Point(localU, localV, 0);
     }
-    
-    let cv = [0, 0, 0];
+    let cv = [
+        0,
+        0,
+        0
+    ];
     for (let i = 0; i < uVector.length - 1; i++) {
         cv[0] += (uVector[i][1] * localV - uVector[i][2] * (evaluateCurve(surface.loops[0], v)[1] - surface.loops[0][i][1]) + uVector[i][2] * (evaluateCurve(surface.loops[0], v)[2] - surface.loops[0][i][2])) / localU;
         cv[1] += (uVector[i][2] * localV - uVector[i][0] * (evaluateCurve(surface.loops[0], v)[2] - surface.loops[0][i][2]) + uVector[i][0] * (evaluateCurve(surface.loops[0], v)[0] - surface.loops[0][i][0])) / localU;
         cv[2] += (uVector[i][0] * localV - uVector[i][1] * (evaluateCurve(surface.loops[0], v)[0] - surface.loops[0][i][0]) + uVector[i][1] * (evaluateCurve(surface.loops[0], v)[1] - surface.loops[0][i][1])) / localU;
     }
-    
     return point.add(new Point(cv[0], cv[1], cv[2])).scale(localU);
 }
 
@@ -1052,7 +1100,9 @@ function rotate(point, axis, angle) {
  * @param {number} scaleFactor - The scaling factor to apply to each coordinate of the point.
  * @returns {Object} A new object representing the scaled point, with properties x, y, and z all multiplied by the scale factor.
  */
-function scale(point, scaleFactor) { return { x: point.x * scaleFactor, y: point.y * scaleFactor, z: point.z * scaleFactor }; }
+function scale(point, scaleFactor) {
+ return { x: point.x * scaleFactor, y: point.y * scaleFactor, z: point.z * scaleFactor };
+}
 
 
 
@@ -1191,199 +1241,30 @@ function translate(point, vector) {
 
 // Function: union
  /**
- * Combines two solids by creating a new solid that is the union of both input solids.
- * @param {Solid} solid1 - The first solid to be combined.
- * @param {Solid} solid2 - The second solid to be combined.
- * @returns {Solid} A new Solid representing the union of the two input solids.
+ * Combines two solids by creating a new solid with all faces from both solids, without duplicates.
+ * @param {Object} solid1 - The first solid to be combined.
+ * @param {Object} solid2 - The second solid to be combined.
+ * @returns {Object} A new Solid object containing the union of the two input solids' faces.
  */
 function union(solid1, solid2) {
-    let shells = [];
-    for (let i = 0; i < solid1.shells.length; i++) {
-        shells.push(cloneShell(solid1.shells[i]));
+    const resultShells = [];
+    function isVertexInLoop(loop, vertex) {
+        return loop.edges.some(edge => edge.vertex1 === vertex || edge.vertex2 === vertex);
     }
-    shells = addShells(shells, cloneShellArray(solid2.shells));
-
-    let faces = [];
-    for (let i = 0; i < solid1.faces.length; i++) {
-        faces.push(cloneFace(solid1.faces[i]));
-    }
-    for (let i = 0; i < solid2.faces.length; i++) {
-        faces.push(cloneFace(solid2.faces[i]));
-    }
-
-    let loops = [];
-    for (let i = 0; i < solid1.loops.length; i++) {
-        loops.push(cloneLoop(solid1.loops[i]));
-    }
-    for (let i = 0; i < solid2.loops.length; i++) {
-        loops.push(cloneLoop(solid2.loops[i]));
-    }
-
-    let edges = [];
-    for (let i = 0; i < solid1.edges.length; i++) {
-        edges.push(cloneEdge(solid1.edges[i], solid2.vertices));
-    }
-    for (let i = 0; i < solid2.edges.length; i++) {
-        edges.push(cloneEdge(solid2.edges[i], solid1.vertices, solid2.vertices));
-    }
-
-    let unionSolid = new Solid();
-    unionSolid.shells = shells;
-    unionSolid.faces = faces;
-    unionSolid.loops = loops;
-    unionSolid.edges = edges;
-    unionSolid.vertices = solid1.vertices.concat(solid2.vertices);
-
-    return unionSolid;
-}
-
-/**
- * Clones a shell by creating a new Shell and cloning all faces within it.
- * @param {Shell} shell - The shell to be cloned.
- * @returns {Shell} A new cloned shell with the same faces as the original.
- */
-function cloneShell(shell) {
-    let newShell = new Shell();
-    newShell.faces = shell.faces.map(cloneFace);
-    return newShell;
-}
-
-/**
- * Adds shells to a given array of shells, ensuring no duplicates based on face comparison.
- * @param {Array<Shell>} shells - The array of shells to which new shells will be added.
- * @param {Array<Shell>} shellArray - The array of shells to be added.
- * @returns {Array<Shell>} The updated array of shells with potential duplicates removed.
- */
-function addShells(shells, shellArray) {
-    for (let shell of shellArray) {
-        if (!shells.some(s => s.isSame(shell))) {
-            shells.push(shell);
+    const resultShellsSet = new Set();
+    for (const face of solid1.shells) {
+        if (!resultShellsSet.has(face)) {
+            addShell(new Solid(), face);
+            resultShellsSet.add(face);
         }
     }
-    return shells;
-}
-
-/**
- * Clones an array of shells by mapping each shell in the original array to a new cloned shell.
- * @param {Array<Shell>} shellArray - The array of shells to be cloned.
- * @returns {Array<Shell>} A new array of cloned shells.
- */
-function cloneShellArray(shellArray) {
-    return shellArray.map(cloneShell);
-}
-
-/**
- * Clones a face by creating a new Face and cloning all loops within it.
- * @param {Face} face - The face to be cloned.
- * @returns {Face} A new cloned face with the same loops as the original.
- */
-function cloneFace(face) {
-    let newFace = new Face();
-    newFace.loops = face.loops.map(loop => ({ ...loop }));
-    return newFace;
-}
-
-/**
- * Clones a loop by creating a new Loop and cloning all edges within it.
- * @param {Loop} loop - The loop to be cloned.
- * @returns {Loop} A new cloned loop with the same edges as the original.
- */
-function cloneLoop(loop) {
-    let newLoop = new Loop();
-    newLoop.edges = loop.edges.map(edge => ({ ...edge }));
-    return newLoop;
-}
-
-/**
- * Clones an edge by creating a new Edge and cloning all vertices within it, using provided vertices from two solids if necessary.
- * @param {Edge} edge - The edge to be cloned.
- * @param {Array<Vertex>} vertices1 - The vertices from the first solid used in the clone.
- * @param {Array<Vertex>} vertices2 - The vertices from the second solid used in the clone (optional).
- * @returns {Edge} A new cloned edge with the same vertices as the original, adjusted for potential missing vertices.
- */
-function cloneEdge(edge, vertices1, vertices2 = []) {
-    let vertices = vertices1.concat(vertices2);
-    let newEdge = new Edge();
-    newEdge.vertices = edge.vertices.map(v => ({ ...v }));
-    return newEdge;
-}
-function union(solid1, solid2) {
-    let shells = [];
-    for (let i = 0; i < solid1.shells.length; i++) {
-        shells.push(cloneShell(solid1.shells[i]));
-    }
-    shells = addShells(shells, cloneShellArray(solid2.shells));
-
-    let faces = [];
-    for (let i = 0; i < solid1.faces.length; i++) {
-        faces.push(cloneFace(solid1.faces[i]));
-    }
-    for (let i = 0; i < solid2.faces.length; i++) {
-        faces.push(cloneFace(solid2.faces[i]));
-    }
-
-    let loops = [];
-    for (let i = 0; i < solid1.loops.length; i++) {
-        loops.push(cloneLoop(solid1.loops[i]));
-    }
-    for (let i = 0; i < solid2.loops.length; i++) {
-        loops.push(cloneLoop(solid2.loops[i]));
-    }
-
-    let edges = [];
-    for (let i = 0; i < solid1.edges.length; i++) {
-        edges.push(cloneEdge(solid1.edges[i], solid2.vertices));
-    }
-    for (let i = 0; i < solid2.edges.length; i++) {
-        edges.push(cloneEdge(solid2.edges[i], solid1.vertices, solid2.vertices));
-    }
-
-    let unionSolid = new Solid();
-    unionSolid.shells = shells;
-    unionSolid.faces = faces;
-    unionSolid.loops = loops;
-    unionSolid.edges = edges;
-    unionSolid.vertices = solid1.vertices.concat(solid2.vertices);
-
-    return unionSolid;
-}
-
-function cloneShell(shell) {
-    let newShell = new Shell();
-    newShell.faces = shell.faces.map(cloneFace);
-    return newShell;
-}
-
-function addShells(shells, shellArray) {
-    for (let shell of shellArray) {
-        if (!shells.some(s => s.isSame(shell))) {
-            shells.push(shell);
+    for (const face of solid2.shells) {
+        if (!resultShellsSet.has(face)) {
+            addShell(new Solid(), face);
+            resultShellsSet.add(face);
         }
     }
-    return shells;
-}
-
-function cloneShellArray(shellArray) {
-    return shellArray.map(cloneShell);
-}
-
-function cloneFace(face) {
-    let newFace = new Face();
-    newFace.loops = face.loops.map(loop => ({ ...loop }));
-    return newFace;
-}
-
-function cloneLoop(loop) {
-    let newLoop = new Loop();
-    newLoop.edges = loop.edges.map(edge => ({ ...edge }));
-    return newLoop;
-}
-
-function cloneEdge(edge, vertices1, vertices2 = []) {
-    let vertices = vertices1.concat(vertices2);
-    let newEdge = new Edge();
-    newEdge.vertices = edge.vertices.map(v => ({ ...v }));
-    return newEdge;
+    return new Solid(resultShells);
 }
 
 
