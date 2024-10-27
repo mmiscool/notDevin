@@ -1,166 +1,20 @@
-import ollama from 'ollama';
-import { fileIOread } from './fileIO.js';
+import { OpenAI } from "openai";
+import { fileIOread } from "./fileIO.js";
 
-async function invokeLLM(props) {
-  console.log(`Running invokeLLM prompt...
-  ------------------------------------------------------------------------------------`);
-  try {
-    const response = await ollama.chat({
-      model: props.model,
-      messages: [{ role: props.role, content: props.content }],
-      stream: true,  // Enable streaming
-      options: {
-        "keep_alive": '24h',
-        "num_ctx": 100000,
-      }
-    });
+let openAIApiKey = "Replace with openAI api key";
+let openAIModel = "gpt-4o";
 
-    let completeResponse = '';
+let openai = new OpenAI({ apiKey: openAIApiKey });
 
-    for await (const part of response) {
-      //console.log('Chunk received:', part.message.content);
-      process.stdout.write(part.message.content)
-      completeResponse += part.message.content;
-    }
+export async function templateCallLLM({ templateName, data, textOnly = true }) {
+  console.log("doing the template llm call");
 
-    console.log('Complete response:', completeResponse);
-    return { message: { content: completeResponse } };  // Return the complete response object
-
-  } catch (error) {
-    console.error(`Query failed!`);
-    console.error(error);
-    return null;  // Return null in case of error
-  }
-}
-
-
-export async function invokeLLMraw(props) {
-  try {
-    console.log(`Running invokeLLMraw prompt...
-    ------------------------------------------------------------------------------------`);
-    const response = await ollama.generate({ ...props, stream: true });  // Enable streaming
-    let completeResponse = '';
-
-    for await (const part of response) {
-      process.stdout.write(part.response);
-      completeResponse += part.response;
-      //console.log('Part:', part);
-      if (part.done === true) {
-        response.response = completeResponse;
-        console.log('Complete response:', response);
-        return { ...response };
-
-      }
-    }
-
-    //console.log('Complete response:', completeResponse);
-    return await { ...response };  // Return the complete response object
-
-  } catch (error) {
-    console.error(`Query failed!`);
-    console.error(error);
-    return null;  // Return null in case of error
-  }
-}
-
-
-
-export async function callLLM(prompt, model = "codegemma", user = "user", context = null) {
-  console.log(`running Prompt: --------------------------------------------------------- \n${prompt}`);
-  let chatConfig = {
-    model,
-    role: user,
-    content: prompt
-  };
-
-  if (context) chatConfig.context = context;
-
-  const response = await invokeLLM(chatConfig);  // Call the invokeLLM function
-  console.log(`Response: --------------------------------------------------------------- \n${response}`);  // Log the response
-  console.log(`LLM request completed: -------------------------------------------------- \n`)
-  return response;
-}
-
-
-// function to pull a specific model from the API
-export async function installModel(modelName, forceInstall = false) {
-  // check if the model is already installed
-  const models = await ollama.list();
-  const model = models.models.find(m => m.name.split(":")[0] === modelName);
-
-  if (model && !forceInstall) {
-    console.log(`Model ${modelName} already installed!`);
-    return;
-  }
-
-
-
-
-  try {
-    let currentDigestDone = false
-    const stream = await ollama.pull({ model: modelName, stream: true })
-    for await (const part of stream) {
-      if (part.digest) {
-        let percent = 0
-        if (part.completed && part.total) {
-          percent = Math.round((part.completed / part.total) * 100)
-        }
-        process.stdout.clearLine(0) // Clear the current line
-        process.stdout.cursorTo(0) // Move cursor to the beginning of the line
-        process.stdout.write(`${part.status} ${percent}%...`) // Write the new text
-        if (percent === 100 && !currentDigestDone) {
-          console.log() // Output to a new line
-          currentDigestDone = true
-        } else {
-          currentDigestDone = false
-        }
-      } else {
-        console.log(part.status)
-      }
-    }
-    console.log(`Model installed successfully!`);
-
-  } catch (error) {
-    console.error(`Model installation failed!`);
-    console.error(error);
-  }
-}
-
-
-// function to list avaiable models from the ollama API
-export async function listModels() {
-  try {
-    const response = await ollama.list();
-    console.log(`Models available:`);
-    console.log(response);
-  } catch (error) {
-    console.error(`Model listing failed!`);
-    console.error(error);
-  }
-}
-
-
-installModel("phi3");
-installModel("mistral")
-installModel("codegemma");
-installModel("codellama");
-installModel("llama2");
-
-
-
-
-export async function templateCallLLM(templateName, data) {
   // data contains an object with the data to be replaced in the template
   const promptTemplatePath = `./promptTemplates/${templateName}.md`;
 
   console.log(`Template path: ${promptTemplatePath}`);
 
-  if (!data.model | data.model == "") data.model = await fileIOread(promptTemplatePath + ".model", "phi3");
-  if (!data.user | data.user == "") data.user = await fileIOread(promptTemplatePath + ".user", "user");
-
-
   await console.log(data);
-
 
   let template = await fileIOread(promptTemplatePath);
   if (template === null) {
@@ -168,11 +22,80 @@ export async function templateCallLLM(templateName, data) {
     return null;
   }
 
-  await installModel(data.model);
-
   for (const key in data) {
     template = await template.replace(`{${key}}`, data[key]);
   }
 
-  return await callLLM(template, data.model, data.user);
+  let result;
+
+
+  template = await templateString(template, data);
+
+  console.log(template);
+  result = await openai.chat.completions.create({
+    model: openAIModel,
+    messages: [
+      {
+        role: "system",
+        content: `You are an expert with javascript, NURBS curves and surfaces, and 3D modeling. 
+          You are creating functions that will be part of a 3D modeling library.`
+      },
+      {
+        role: "user",
+        content: template,
+      },
+    ],
+  });
+
+
+  if (!result) {
+    console.log("Error: Could not get result from LLM");
+    return null;
+  }
+
+  if (textOnly) return result.choices[0]?.message?.content;
+  return result;
+}
+
+
+
+
+async function templateString(template, data) {
+  for (const key in data) {
+    template = await template.replace(`{${key}}`, data[key]);
+  }
+
+  return template;
+}
+
+export async function invokeLLMraw(request) {
+  console.log(request);
+  console.log(`doing the raw llm call, request: ${request.prompt}`);
+
+  let result;
+
+
+  result = await openai.chat.completions.create({
+    model: openAIModel,
+    messages: [
+      {
+        role: "system",
+        content: `You are an expert with javascript, NURBS curves and surfaces, and 3D modeling. 
+          You are creating functions that will be part of a 3D modeling library.`
+      },
+      {
+        role: "user",
+        content: request.prompt,
+      },
+    ],
+  });
+
+
+  if (!result) {
+    console.log("Error: Could not get result from LLM");
+    return null;
+  }
+
+  console.log(result.choices[0]?.message?.content);
+  return result.choices[0]?.message?.content;
 }

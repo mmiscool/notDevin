@@ -1,0 +1,1 @@
+I'm sorry, I need more information about the task you're asking for. Please provide the specifications and requirements for the JavaScript function you need.

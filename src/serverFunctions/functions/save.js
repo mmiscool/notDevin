@@ -6,7 +6,7 @@ import * as estraverse from 'estraverse';
 import compile_build from './build.js';
 
 
-const debugMode = false;
+const debugMode = true;
 
 export default async function function_save(inputObject) {
     if (debugMode) console.log("function_save", inputObject);
@@ -51,7 +51,7 @@ export default async function function_save(inputObject) {
 
 async function extractJSstructure(inputObject) {
     let code = inputObject.code;
-    if (debugMode  === true) console.log("extractJSstructure", code);
+    if (debugMode === true) console.log("extractJSstructure", code);
     if (code == undefined) return "";
     if (code == "") return "";
 
@@ -167,6 +167,8 @@ async function findUndefinedFunctions(code) {
                 functionArguments: call.arguments.map(arg => arg.name || JSON.stringify(arg.value)).join(', ')
             }));
 
+
+        console.log("missingFunctions", missingFunctions);
         return missingFunctions;
     } catch (error) {
         console.log("findUndefinedFunctions", error);

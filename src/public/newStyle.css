@@ -145,7 +145,7 @@ h6 {
 
 .container {
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 450px 1fr;
     grid-template-rows: 30px auto;
     gap: 0px 0px;
     grid-auto-flow: row;
@@ -199,4 +199,8 @@ td {
 
 table {
     width: 100%;
+}
+
+#codeText {
+    height:calc(100% - 30px);
 }

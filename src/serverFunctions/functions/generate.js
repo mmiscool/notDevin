@@ -14,7 +14,7 @@ export default async function function_generate(inputObject) {
 
     //console.log("here is the function object", myFunction);
 
-
+    myFunction.originalArguments = myFunction.arguments;
     myFunction.arguments = await addTextChunkLabel("function input arguments", myFunction.arguments);
     myFunction.specification = await addTextChunkLabel("function specification", myFunction.specification);
     myFunction.code = await addTextChunkLabel("current function", myFunction.code);
@@ -26,12 +26,12 @@ export default async function function_generate(inputObject) {
 
 
 
-    let code = await templateCallLLM("makeFunction", myFunction);
-    myFunction.code = await replaceFirstFunctionName(code.message.content, functionName);
+    let code = await templateCallLLM({ templateName: "makeFunction", data: myFunction });
+    //console.log("code", code);
+    myFunction.code = await replaceFirstFunctionName(code, functionName);
     code = myFunction.code;
 
-    let jsdoc = await templateCallLLM("makeFunction.jsdoc", myFunction);
-    jsdoc = jsdoc.message.content;
+    let jsdoc = await templateCallLLM({ templateName: "makeFunction.jsdoc", data:myFunction });
 
     return await function_save({
         _id: inputObject._id,

@@ -18,6 +18,8 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
+            /*set to monospace for better formatting*/
+            font-family: monospace;
         }
 
         .container {
@@ -93,10 +95,10 @@
         }
 
         .chatLine {
-            border: 4px solid #636574;
-            border-radius: 5px;
-            padding: 10px;
-            margin: 10px;
+            border: 0px solid #636574;
+            padding: 3px;
+            margin: 0px;
+
         }
 
         .chatLineUser {
@@ -108,9 +110,9 @@
 
         .chatLineHighlighted {
             background-color: #ff0000;
-            border-radius: 5px;
-            padding: 10px;
-            margin: 10px;
+            border-radius: 0px;
+            padding:3px;
+            margin: 0px;
         }
     </style>
 
@@ -124,7 +126,7 @@
 
         </div>
         <div class="toolBarR">
-            <button id="generateFunctionsFromSelected">Generate Functions</button>
+            <button id="clearButton">clear</button>
 
         </div>
         <div class="leftTop">
