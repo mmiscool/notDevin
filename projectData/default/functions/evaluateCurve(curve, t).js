@@ -1,39 +1,48 @@
-function evaluateCurve(curve, t) {
-    let currentPoint = curve.points[0];
-    for (let i = 1; i < curve.points.length; i++) {
-        const nextPoint = curve.points[i];
-        if (t <= calculateDistanceBetweenPoints(currentPoint, nextPoint) / getCurveLength(curve)) {
-            return createVectorFromPoints(currentPoint, nextPoint).scale((t / calculateDistanceBetweenPoints(currentPoint, nextPoint)) * getVectorDirection(currentPoint, nextPoint));
-        }
-    }
-    currentPoint = curve.points[curve.points.length - 1];
-    const remainingDistance = getCurveLength(curve) - calculateDistanceBetweenPoints(currentPoint, t);
-    return createVectorFromPoints(currentPoint, interpolatePointOnCurve(t, currentPoint, curve.points[curve.points.length - 1])).scale((remainingDistance / getVectorDirection(currentPoint, curve.points[curve.points.length - 1])).magnitude()) * getVectorDirection(currentPoint, curve.points[curve.points.length - 1]);
+function evaluateCurve(vector1, vector2) {
+    var dotProduct = vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
+    var magnitude1 = Math.sqrt(Math.pow(vector1.x, 2) + Math.pow(vector1.y, 2) + Math.pow(vector1.z, 2));
+    var magnitude2 = Math.sqrt(Math.pow(vector2.x, 2) + Math.pow(vector2.y, 2) + Math.pow(vector2.z, 2));
+    return Math.acos(dotProduct / (magnitude1 * magnitude2)) * 180 / Math.PI;
 }
-
-function calculateDistanceBetweenPoints(p1, p2) {
-    return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2) + Math.pow(p2.z - p1.z, 2));
+function _addVector(vector1, vector2) {
+    return {
+        x: vector1.x + vector2.x,
+        y: vector1.y + vector2.y,
+        z: vector1.z + vector2.z
+    };
 }
-
-function getCurveLength(curve) {
-    let length = 0;
-    for (let i = 1; i < curve.points.length; i++) {
-        length += calculateDistanceBetweenPoints(curve.points[i - 1], curve.points[i]);
-    }
-    return length;
+function _subtractVector(vector1, vector2) {
+    return {
+        x: vector1.x - vector2.x,
+        y: vector1.y - vector2.y,
+        z: vector1.z - vector2.z
+    };
 }
-
-function createVectorFromPoints(p1, p2) {
-    return { x: p2.x - p1.x, y: p2.y - p1.y, z: p2.z - p1.z };
+function _norm(vector) {
+    var magnitude = Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2) + Math.pow(vector.z, 2));
+    return {
+        x: vector.x / magnitude,
+        y: vector.y / magnitude,
+        z: vector.z / magnitude
+    };
 }
-
-function getVectorDirection(p1, p2) {
-    let vector = createVectorFromPoints(p1, p2);
-    let magnitude = Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2) + Math.pow(vector.z, 2));
-    return { x: vector.x / magnitude, y: vector.y / magnitude, z: vector.z / magnitude };
+function _crossProduct(vector1, vector2) {
+    return {
+        x: vector1.y * vector2.z - vector1.z * vector2.y,
+        y: vector1.z * vector2.x - vector1.x * vector2.z,
+        z: vector1.x * vector2.y - vector1.y * vector2.x
+    };
 }
-
-function interpolatePointOnCurve(t, p1, p2) {
-    let ratio = t / calculateDistanceBetweenPoints(p1, p2);
-    return { x: p1.x + (p2.x - p1.x) * ratio, y: p1.y + (p2.y - p1.y) * ratio, z: p1.z + (p2.z - p1.z) * ratio };
+function _dotProduct(vector1, vector2) {
+    return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
+}
+function _getMagnitude(vector) {
+    return Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2) + Math.pow(vector.z, 2));
+}
+function _scaleVector(vector, value) {
+    return {
+        x: vector.x * value,
+        y: vector.y * value,
+        z: vector.z * value
+    };
 }

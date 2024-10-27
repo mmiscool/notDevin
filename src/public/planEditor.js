@@ -15,53 +15,45 @@ spinner_insert();
 let contextWindow = [];
 
 
+// const defaultPromptTemplate = `
+// Make a list of functions required to be present in a full featured NURBS library that handles 3D surfaces, curves, intersections and any other utility functions required. 
+// This is to plan implementing these functions in javascript. Be sure to use javascript variables. Not C/C++ variable types. 
 
-export async function listModels() {
-    const myModelsList = await sendToApi("settings/listModels", {});
-    const listOfModelNames = [];
+// also include a list of functions required to build a complete BREP kernel including extrude, revolve, sweep, loft, fillet, chamfer and shell.
 
+// In the description for each function include a list of functions that function will depend on.  do not include ` characters in your response. 
 
-    console.log(myModelsList);
-    for (const model of myModelsList) {
-        console.log(model);
-        let modelNamToAdd = model.name;
-        // split string on : and get the first element
-        //modelNamToAdd = modelNamToAdd.split(":")[0];
+// Make the list in this format:
+// * functionName(arg1, arg2) : Short description of what function does. Depends on (functionName, functionName)
+// `;
 
-        listOfModelNames.push(modelNamToAdd);
-    }
+const defaultPromptTemplate = `
+Make a list of functions required to be present in a full featured NURBS library that handles 3D surfaces, curves, intersections and any other utility functions required. 
+This is to plan implementing these functions in javascript. Be sure to use javascript variables. Not C/C++ variable types. 
+Function names should be camelCase and not be longer than 30 characters.
 
-    await console.log(listOfModelNames);
-    await updateSelectOptions("modelsList", listOfModelNames);
+Also include a list of functions required to build a complete BREP kernel including extrude, revolve, sweep, loft, fillet, chamfer, and shell.
 
-    // get the selected model from local storage
-    const selectedModel = localStorage.getItem("selectedModel");
-    if (selectedModel) {
-        modelsList.value = selectedModel;
-    }
+In the description for each function, include a list of functions that function will depend on. Do not include \` characters in your response. 
+Each list item must be on a single line.
 
-}
-
-
+Make the list in this format (one function per line starting with *):
+* functionName(arg1, arg2): Short description of what function does. Depends on (functionName, functionName)
+`;
 
 
 
 document.addEventListener('DOMContentLoaded', async function () {
-    await listModels();
 
-    promptTextarea.value = localStorage.lastTextPrompt || `
-Make a list of functions required to be present in a full featured NURBS library that handles 3D surfaces, curves, intersections and any other utility functions required. 
-This is to plan implementing these functions in javascript. 
 
-also include a list of functions required to build a complete BREP kernel including extrude, revolve, sweep, loft, fillet, chamfer and shell.
-
-In the description for each function include a list of functions that function will depend on.  
-
-Make the list in this format:
-* functionName(arg1, arg2) : Short description of what function does. Depends on (functionName, functionName).
-    `;
 });
 
+promptTextarea.value = localStorage.lastTextPrompt || defaultPromptTemplate;
+
+document.getElementById("clearButton").addEventListener("click", function () {
+    promptTextarea.value = defaultPromptTemplate;
+    chatMessagesArea.innerHTML = promptTextarea.value;
+});
 
 
 let lastModelUsed = "";
@@ -79,7 +71,7 @@ async function submitPrompt(doNotSend = false) {
 
     const listOfUserInput = promptTextarea.value.split("\n").map(line => line.trim()).filter(line => line.length > 0);
 
-    await outputListToChatArea(listOfUserInput, UserChatBalloon, true) 
+    await outputListToChatArea(listOfUserInput, UserChatBalloon, true)
 
 
 
@@ -110,7 +102,7 @@ async function submitPrompt(doNotSend = false) {
         context: contextWindow
     });
 
-console.log(response);
+    console.log(response);
     localStorage.lastTextPrompt = promptTextarea.value;
 
 
@@ -122,8 +114,8 @@ console.log(response);
 
 
 
-    const responseAsLinesArray = response.response.split("\n").map(line => line.trim()).filter(line => line.length > 0);
-    await outputListToChatArea(responseAsLinesArray, chatBalloon) 
+    const responseAsLinesArray = response.split("\n").map(line => line.trim()).filter(line => line.length > 0);
+    await outputListToChatArea(responseAsLinesArray, chatBalloon)
 
 
     chatMessagesArea.appendChild(chatBalloon);
@@ -145,7 +137,7 @@ async function outputListToChatArea(responseAsLinesArray, chatBalloon, addAstric
     for (let line of responseAsLinesArray) {
         const chatLine = document.createElement("div");
         if (addAstrics) {
-            line = " * " + line ;
+            line = " * " + line;
         }
         chatLine.innerText = line;
         console.log(line);
@@ -182,46 +174,56 @@ async function outputListToChatArea(responseAsLinesArray, chatBalloon, addAstric
 document.getElementById("generateFunctionsFromSelected").addEventListener("click", generateFunctionsFromSelected);
 
 async function generateFunctionsFromSelected() {
+    console.log("generateFunctionsFromSelected");
     // get a list of all the elements with the class chatLineHighlighted
     const highlightedElements = document.getElementsByClassName("chatLineHighlighted");
     // create an array to store the text of the highlighted elements
     const functionsToMake = [];
     // loop over each highlighted element and push the text to the highlightedText array
     for (const element of highlightedElements) {
-        let functionStringDefinition = element.innerText;
-        functionStringDefinition = functionStringDefinition.trim();
+        try {
+            let functionStringDefinition = element.innerText;
+            functionStringDefinition = functionStringDefinition.trim();
 
-        /*
-        Strings will look like this:
-        * createRationalNurbsCurve(controlPoints, weights, degree): Creates a Rational NURBS curve given control points, corresponding weights, and the curve's degree.
-        */
+            /*
+            Strings will look like this:
+            * createRationalNurbsCurve(controlPoints, weights, degree): Creates a Rational NURBS curve given control points, corresponding weights, and the curve's degree.
+            */
 
-        let newFunctionName = functionStringDefinition.split("(")[0].trim();
-        // remove the first word from the string if there are more than one word
-        newFunctionName = newFunctionName.split(" ").slice(1).join(" ");
-
-
-        let argumentsList = functionStringDefinition.split("(")[1].split(")")[0].trim();
-        let specification = functionStringDefinition.split(":")[1].trim();
+            let newFunctionName = functionStringDefinition.split("(")[0].trim();
+            // remove the first word from the string if there are more than one word
+            newFunctionName = newFunctionName.split(" ").slice(1).join(" ");
 
 
-        const functionToMake = {
-            _id: newFunctionName,
-            projectName: window.projectName,
-            arguments: argumentsList,
-            specification: specification,
-
-        };
+            let argumentsList = functionStringDefinition.split("(")[1].split(")")[0].trim();
+            let specification = functionStringDefinition.split(":")[1].trim();
 
 
-        functionsToMake.push(functionToMake);
-        console.log(functionsToMake);
+            const functionToMake = {
+                _id: newFunctionName,
+                projectName: window.projectName,
+                arguments: argumentsList,
+                specification: specification,
+
+            };
+
+
+            functionsToMake.push(functionToMake);
+            console.log(functionsToMake);
+        } catch (e) {
+            console.log(e);
+            console.log(functionStringDefinition);
+        }
+
     }
+
 
 
     const functionsToMakeRequestObject = {
         functionsToMake: functionsToMake
     };
+
+    console.log(functionsToMakeRequestObject);
     sendToApi("planner/addFunctions", functionsToMakeRequestObject);
 
 }

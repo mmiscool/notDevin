@@ -50,7 +50,7 @@ export default async function function_list(inputObject) {
 }
 
 
-export async function function_list_with_arguments(inputObject) {
+export async function function_list_with_arguments(inputObject, returnType = "code") {
     //console.log("function_list", inputObject);
     const listOfFunctions = await db.db.findDocuments({ projectName: inputObject.projectName });
     let listOfFunctionsWIthArguments = "";
@@ -60,7 +60,9 @@ export async function function_list_with_arguments(inputObject) {
     for (let i = 0; i < listOfFunctions.length; i++) {
 
         if (listOfFunctions[i]._id !== inputObject._id) {
-            let functionWithArgsString = listOfFunctions[i]._id + "(" + listOfFunctions[i].arguments + ")";
+            //let functionWithArgsString = listOfFunctions[i]._id + "(" + listOfFunctions[i].arguments + ")";
+            let functionWithArgsString = `${listOfFunctions[i]._id}(${listOfFunctions[i].arguments})`;
+            if (returnType === "code") functionWithArgsString += `{};`;
             listOfFunctionsWIthArguments += functionWithArgsString + "\n";
         }
 

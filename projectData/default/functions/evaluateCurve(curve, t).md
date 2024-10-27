@@ -2,4 +2,4 @@
 ### Arguments: 
 curve, t
 ### Specification: 
-Evaluates a point on the curve at parameter t. Depends on (Curve, Point).
+Evaluates the NURBS curve at a given parameter t. Depends on

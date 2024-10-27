@@ -1,0 +1,7 @@
+function intersectSurfaces(p1, p2) {
+    return {
+        x: (p1.x + p2.x) / 2,
+        y: (p1.y + p2.y) / 2,
+        z: (p1.z + p2.z) / 2
+    };
+}
