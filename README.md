@@ -1,48 +1,93 @@
 # **This project is being discontinued in favor of focusing efforts on a different tool I made that dose the same thing but works with preexisting files https://github.com/mmiscool/aiCoder ** 
 https://github.com/mmiscool/aiCoder
+.
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
+.
 
 
 
